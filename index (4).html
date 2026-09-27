@@ -1,0 +1,2209 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HabitTracker Pro - Ultimate VIP Dynamic Edition</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons for UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Firebase SDKs for Cloud Data Sync & Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
+    
+    <!-- Premium Tech Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f0fdf4', 500: '#22c55e', 600: '#16a34a', 700: '#15803d' }
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-5px)' } },
+                        pulseGlow: { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.7 } },
+                        modalPop: { '0%': { opacity: 0, transform: 'scale(0.95) translateY(10px)' }, '100%': { opacity: 1, transform: 'scale(1) translateY(0)' } },
+                        checkPop: { '0%': { transform: 'scale(0.8)' }, '50%': { transform: 'scale(1.2)' }, '100%': { transform: 'scale(1)' } }
+                    },
+                    animation: {
+                        float: 'float 4s ease-in-out infinite',
+                        pulseGlow: 'pulseGlow 2s ease-in-out infinite',
+                        modalPop: 'modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        checkPop: 'checkPop 0.3s ease-in-out'
+                    }
+                }
+            }
+        };
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030712;
+            color: #f3f4f6;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        h1, h2, h3, h4, h5, h6, .font-extrabold, .font-black, .timer-display, .habit-streak-pill, .date-num {
+            font-family: 'Outfit', sans-serif !important;
+        }
+        
+        button, input, select, textarea, .habit-card-premium, .water-glass-item {
+            touch-action: manipulation; 
+        }
+        
+        .glass {
+            background: rgba(17, 24, 39, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(31, 41, 55, 0.7) 0%, rgba(17, 24, 39, 0.9) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2rem;
+        }
+        .glass-hover:hover {
+            border-color: rgba(34, 197, 94, 0.45);
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.6);
+        }
+        
+        /* Advanced LIGHT MODE Global CSS Overrides */
+        html:not(.dark) body { background-color: #f8fafc; color: #0f172a; }
+        html:not(.dark) .glass { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.1); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1); }
+        html:not(.dark) .glass-card { background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%); border-color: rgba(0,0,0,0.1); }
+        html:not(.dark) .bg-slate-950, html:not(.dark) .bg-slate-900 { background-color: #ffffff; border-color: #e2e8f0; }
+        html:not(.dark) .bg-slate-950\/60, html:not(.dark) .bg-slate-950\/80, html:not(.dark) .bg-slate-950\/90 { background-color: rgba(241, 245, 249, 0.85); }
+        html:not(.dark) .text-slate-100 { color: #0f172a; }
+        html:not(.dark) .text-slate-200 { color: #1e293b; }
+        html:not(.dark) .text-slate-300 { color: #334155; }
+        html:not(.dark) .text-slate-400, html:not(.dark) .text-slate-500 { color: #475569; }
+        html:not(.dark) .border-slate-800, html:not(.dark) .border-slate-700 { border-color: #cbd5e1; }
+        html:not(.dark) .text-slate-950 { color: #f8fafc; }
+        html:not(.dark) .bg-slate-800 { background-color: #e2e8f0; color: #0f172a; }
+
+        .circle-bg { fill: none; stroke: rgba(55, 65, 81, 0.4); stroke-width: 3.8; }
+        .circle-progress { fill: none; stroke-width: 3.8; stroke-linecap: round; transition: stroke-dasharray 0.7s ease; transform-origin: center; }
+        .rotate-360 { animation: spinRing 20s linear infinite; }
+        @keyframes spinRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .water-glass-item { transition: all 0.2s ease; border-radius: 1.25rem; }
+        .water-glass-item:active { transform: scale(0.95); }
+        
+        .badge-unlocked { background: radial-gradient(circle at top left, rgba(245, 158, 11, 0.25), rgba(17, 24, 39, 0.95)); border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 6px 25px -5px rgba(245, 158, 11, 0.3); border-radius: 1.5rem; }
+        .badge-locked { background: rgba(17, 24, 39, 0.6); border-color: rgba(55, 65, 81, 0.4); opacity: 0.6; border-radius: 1.5rem; }
+        html:not(.dark) .badge-locked { background: #f1f5f9; border-color: #cbd5e1; opacity: 1; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(17, 24, 39, 0.8); }
+        ::-webkit-scrollbar-thumb { background: rgba(55, 65, 81, 0.8); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(34, 197, 94, 0.6); }
+
+        .habit-color-indicator {
+            width:7px; min-width:7px; align-self:stretch; min-height:44px; border-radius:999px;
+            background:var(--habit-gradient,linear-gradient(180deg,#8b5cf6,#06b6d4));
+            box-shadow:0 0 14px color-mix(in srgb,var(--habit-color,#8b5cf6) 24%,transparent);
+            transition:transform .3s ease,box-shadow .3s ease,opacity .3s ease;
+        }
+        .habit-card-premium { position:relative; overflow:hidden; contain:layout paint; }
+        .habit-card-premium:active { transform: scale(0.98); }
+        .habit-card-premium::before { content:""; position:absolute; left:0;top:0;bottom:0;width:2px; background:var(--habit-gradient,linear-gradient(180deg,#8b5cf6,#06b6d4)); opacity:.55; transition:opacity .3s ease; }
+        .habit-card-premium:hover::before{opacity:1}
+        .habit-card-premium.habit-completed { box-shadow:0 10px 32px rgba(16,185,129,.08), inset 0 0 0 1px rgba(52,211,153,.10); }
+        
+        .habit-week { display:flex; align-items:center; gap:4px; margin-top:7px; }
+        .habit-week-day {
+            width:18px;height:18px; border-radius:6px; border:1px solid rgba(100,116,139,.25); background:rgba(15,23,42,.72);
+            color:#64748b; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:700; line-height:1; transition:all .28s ease;
+        }
+        .habit-week-day.done { border-color:transparent; color:#08111f; background:var(--habit-gradient,linear-gradient(135deg,#8b5cf6,#06b6d4)); box-shadow:0 3px 10px rgba(99,102,241,.18); transform:translateY(-1px); }
+        .habit-week-day.today { outline:1px solid rgba(226,232,240,.35); outline-offset:1px; }
+        
+        .habit-streak-pill { display:inline-flex; align-items:center; gap:4px; margin-left:7px; padding:3px 7px; border-radius:999px; background:rgba(15,23,42,.72); border:1px solid rgba(100,116,139,.20); color:#94a3b8; font-size:9px; letter-spacing:.02em; }
+        .habit-streak-pill.active { color:#c4b5fd; border-color:rgba(139,92,246,.22); background:linear-gradient(90deg,rgba(139,92,246,.10),rgba(6,182,212,.07)); }
+
+        .timer-panel { padding: .75rem 1rem !important; border-radius: 1.5rem !important; position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(17,24,39,.94), rgba(6,78,59,.22)); }
+        html:not(.dark) .timer-panel { background: linear-gradient(135deg, #ffffff, #ecfdf5); }
+        .timer-panel > div:first-child { gap: .75rem !important; }
+        .timer-panel .w-11.h-11 { width: 2.25rem !important; height: 2.25rem !important; border-radius: .8rem !important; }
+        .timer-panel .relative.w-28.h-28 { width: 4.5rem !important; height: 4.5rem !important; }
+        .timer-panel .relative.w-28.h-28 .timer-display { font-size: 1rem !important; }
+        .timer-panel .relative.w-28.h-28 svg circle { stroke-width: 7 !important; }
+        .timer-panel .flex.flex-wrap.justify-center.gap-2 { gap: .35rem !important; }
+        .timer-panel button { padding: .45rem .7rem !important; border-radius: .8rem !important; }
+        .timer-panel > div:last-child { margin-top: .5rem !important; padding-top: .5rem !important; }
+        .timer-panel .timer-preset { padding: .3rem .55rem !important; }
+        @media (min-width: 1024px) { .timer-panel > div:first-child { flex-direction: row !important; } .timer-panel > div:last-child { margin-top: .35rem !important; } #vipFocusTimer { min-height: 100%; } }
+        @media (max-width: 640px) { .timer-panel { padding: .7rem !important; } .timer-panel > div:first-child { flex-direction: column !important; align-items: stretch !important; } .timer-panel > div:first-child > div:first-child { justify-content: center; } .timer-panel > div:first-child > div:last-child { justify-content: center; } .timer-panel .relative.w-28.h-28 { width: 4.25rem !important; height: 4.25rem !important; } }
+        .timer-display { font-variant-numeric: tabular-nums; letter-spacing: .04em; text-shadow: 0 0 22px rgba(52,211,153,.18); }
+        .timer-progress { transition: stroke-dasharray .35s ease, stroke .35s ease; }
+        .timer-running { animation: timerGlow 2s ease-in-out infinite; }
+        @keyframes timerGlow { 0%,100% { box-shadow: 0 0 0 rgba(16,185,129,0); } 50% { box-shadow: 0 0 28px rgba(16,185,129,.12); } }
+        .timer-preset { transition: all .2s ease; }
+        .timer-preset:active { transform: translateY(1px); }
+        .timer-sound-on { color: #34d399; }
+    </style>
+</head>
+<body class="min-h-screen pb-16 selection:bg-emerald-500 selection:text-slate-950">
+
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden">
+        <div class="glass max-w-md w-full p-6 rounded-[2.5rem] border-emerald-500/30 text-center space-y-5 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 animate-modalPop">
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-emerald-500/20 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-teal-500/20 rounded-full blur-2xl"></div>
+
+            <div class="w-16 h-16 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center mx-auto text-slate-950 text-2xl shadow-lg shadow-emerald-500/30 animate-bounce">
+                <i class="fa-solid fa-fire"></i>
+            </div>
+
+            <div class="space-y-2">
+                <h3 class="text-xl font-extrabold text-slate-100">Welcome to Dynamic Schedule VIP 🔥</h3>
+                <p class="text-sm text-slate-300 leading-relaxed font-medium">
+                    "Flexible daily classes, uninterrupted streaks, and auto-disappearing tasks."
+                </p>
+                <p class="text-xs text-slate-400">
+                    Once you complete a "Today's Target", it will automatically vanish to keep your list clean—without breaking your streak!
+                </p>
+            </div>
+
+            <div class="pt-2">
+                <button type="button" onclick="window.closeWelcomeModal()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-extrabold py-3.5 px-6 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+                    <span>Let's Get Started</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboardModal" class="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden">
+        <div class="glass max-w-md w-full p-6 rounded-[2.5rem] border-amber-500/30 text-left space-y-4 shadow-2xl relative overflow-hidden bg-slate-900 animate-modalPop">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-base font-extrabold text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-ranking-star text-amber-400"></i> Global Leaderboard
+                    </h3>
+                    <p class="text-[10px] text-slate-400">Compete with other top students globally.</p>
+                </div>
+                <button type="button" onclick="window.closeLeaderboard()" class="text-slate-400 hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div id="leaderboardList" class="space-y-2 max-h-72 overflow-y-auto pr-2">
+                <!-- Leaderboard dynamically rendered here -->
+            </div>
+            
+            <div class="pt-2 border-t border-slate-800/80 text-center">
+                <p class="text-[9px] text-slate-500 font-semibold mb-2">XP is granted by completing targets, focus sessions, and hydration.</p>
+                <button type="button" onclick="window.closeLeaderboard()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3 rounded-2xl text-xs transition active:scale-98">
+                    Close Rankings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden overflow-y-auto">
+        <div class="glass max-w-lg w-full p-6 rounded-[2.5rem] border-slate-700 text-left space-y-4 shadow-2xl relative overflow-hidden bg-slate-900 animate-modalPop my-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-emerald-400"></i> Settings & Backup
+                </h3>
+                <button type="button" onclick="window.closeSettingsModal()" class="text-slate-400 hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="settingsForm" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-300 mb-1">Select Goal / Exam</label>
+                    <select id="goalTypeSelect" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                        <option value="NEET">NEET UG</option>
+                        <option value="JEE">JEE Main / Advanced</option>
+                        <option value="UPSC">UPSC CSE</option>
+                        <option value="BOARDS">Class 10/12 Boards</option>
+                        <option value="CUSTOM">Custom Goal Target</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">Goal Title</label>
+                        <input type="text" id="goalTitleInput" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500" required>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">Target Deadline</label>
+                        <input type="date" id="goalDateInput" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">Daily Water Target (Glasses)</label>
+                        <input type="number" id="waterTargetInput" min="1" max="16" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-cyan-500" required>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-300 mb-1">Day Reset Time (Night Owl)</label>
+                        <select id="resetHourInput" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                            <option value="0">12:00 AM (Midnight)</option>
+                            <option value="3">3:00 AM</option>
+                            <option value="4" selected>4:00 AM (Recommended)</option>
+                            <option value="5">5:00 AM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800/80 pt-3 mt-1 space-y-3">
+                    <h4 class="font-bold text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-crosshairs"></i> Custom Daily Missions</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Target Tasks (Count)</label>
+                            <input type="number" id="missionTaskInput" min="1" max="20" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500" required>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-300 mb-1">Target Focus (Minutes)</label>
+                            <input type="number" id="missionFocusInput" min="5" max="600" step="5" class="w-full bg-slate-950 border border-slate-800 rounded-2xl px-3.5 py-3 text-slate-200 focus:outline-none focus:ring-1 focus:ring-amber-500" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-3 flex gap-2">
+                    <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold py-3.5 rounded-2xl transition shadow-lg shadow-emerald-500/20 active:scale-[0.98]">Save Configuration</button>
+                </div>
+            </form>
+
+            <div class="border-t border-slate-800 pt-4 mt-4 space-y-3">
+                <h4 class="text-sm font-bold text-slate-100"><i class="fa-solid fa-cloud-arrow-down text-blue-400 mr-1"></i> Data Backup & Restore</h4>
+                <p class="text-[10px] text-slate-400">Save your tasks, history, and streak in JSON format to prevent data loss.</p>
+                <div class="flex gap-2">
+                    <button type="button" onclick="window.downloadBackup()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 active:scale-[0.98]">
+                        <i class="fa-solid fa-download"></i> Backup
+                    </button>
+                    <button type="button" onclick="window.triggerRestore()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-2 active:scale-[0.98]">
+                        <i class="fa-solid fa-upload"></i> Restore
+                    </button>
+                    <input type="file" id="backupFileInput" accept=".json" class="hidden" onchange="window.restoreBackup(event)">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day History Inspector Modal -->
+    <div id="dayInspectorModal" class="fixed inset-0 z-[100000] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden">
+        <div class="glass max-w-md w-full p-6 rounded-[2.5rem] border-emerald-500/30 text-left space-y-4 shadow-2xl relative overflow-hidden bg-slate-900 animate-modalPop">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-sm sm:text-base font-extrabold text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-emerald-400"></i> <span id="inspectorDateTitle">Day Performance</span>
+                    </h3>
+                    <p class="text-[10px] text-slate-400" id="inspectorDateSubtitle">Task Completion Log</p>
+                </div>
+                <button type="button" onclick="window.closeDayInspector()" class="text-slate-400 hover:text-slate-200 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80 text-center">
+                <div>
+                    <div class="text-[8px] uppercase tracking-wider text-slate-500 font-bold">Tasks</div>
+                    <div id="inspectorTaskStat" class="text-xs font-black text-slate-100 mt-0.5">0 Done</div>
+                </div>
+                <div>
+                    <div class="text-[8px] uppercase tracking-wider text-slate-500 font-bold">Focus Time</div>
+                    <div id="inspectorFocusStat" class="text-xs font-black text-cyan-400 mt-0.5">0m</div>
+                </div>
+                <div>
+                    <div class="text-[8px] uppercase tracking-wider text-slate-500 font-bold">Hydration</div>
+                    <div id="inspectorWaterStat" class="text-xs font-black text-teal-400 mt-0.5">0 Gl</div>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-list text-emerald-400 text-[10px]"></i> Logged Tasks on this day:
+                </h4>
+                <div id="inspectorTasksList" class="space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
+                    <!-- Tasks injected here -->
+                </div>
+            </div>
+
+            <div class="pt-1">
+                <button type="button" onclick="window.closeDayInspector()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl text-xs transition active:scale-98">
+                    Close Inspector
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <header class="border-b border-slate-800/80 bg-slate-900/90 sticky top-0 z-50 backdrop-blur-xl">
+        <div class="max-w-6xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+            
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center text-slate-950 shadow-md shadow-emerald-500/20 animate-pulseGlow">
+                    <i class="fa-solid fa-fire text-xs"></i>
+                </div>
+                <div>
+                    <h1 class="text-xs font-extrabold bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-200 bg-clip-text text-transparent leading-none">HabitTracker Pro</h1>
+                    <p class="text-[8px] text-slate-400 font-medium mt-0.5">Dynamic Tasks • Safe Streak Engine</p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+                <div class="bg-slate-950/90 border border-emerald-500/25 px-2.5 py-1.5 rounded-2xl flex items-center gap-1.5 shadow-inner">
+                    <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></div>
+                    <div class="flex flex-col">
+                        <div class="text-[10px] font-mono font-extrabold text-emerald-400 tracking-wider flex items-center gap-1" id="liveTimeText">
+                            <i class="fa-regular fa-clock text-[8px]"></i> 00:00:00 AM
+                        </div>
+                        <div class="text-[8px] text-slate-400 font-semibold tracking-wide" id="liveDateText">
+                            Saturday, Dynamic
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/90 border border-slate-800 px-2.5 py-1.5 rounded-2xl hidden sm:flex items-center gap-1.5">
+                    <div class="w-6 h-6 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-[9px]">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <div class="text-[7px] text-slate-400 font-bold uppercase tracking-wider">Lvl <span id="userLevel">1</span></div>
+                        <div class="text-[10px] font-extrabold text-amber-400" id="userXP">0 XP</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/90 border border-slate-800 px-2.5 py-1.5 rounded-2xl hidden sm:flex items-center gap-1.5">
+                    <div class="w-6 h-6 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-[9px] animate-bounce">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <div class="text-[7px] text-slate-400 font-bold uppercase tracking-wider">Streak</div>
+                        <div class="text-[10px] font-extrabold text-emerald-400" id="currentStreak">0 Days</div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons: Leaderboard, Analytics, Theme, Settings, Profile -->
+                <button type="button" onclick="window.openLeaderboard()" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-amber-400 hover:text-amber-300 transition flex items-center justify-center shadow-md active:scale-95" title="Global Leaderboard">
+                    <i class="fa-solid fa-ranking-star text-xs"></i>
+                </button>
+                
+                <!-- NEW: Analytics Creator Button -->
+                <button type="button" onclick="window.showVipReward('Analytics Live', 'Open your Analytics File to view live visitor stats!')" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-purple-400 hover:text-purple-300 transition flex items-center justify-center shadow-md active:scale-95" title="Creator Analytics">
+                    <i class="fa-solid fa-chart-line text-xs"></i>
+                </button>
+
+                <button type="button" onclick="window.toggleTheme()" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-yellow-400 transition flex items-center justify-center shadow-md active:scale-95" title="Toggle Light/Dark Mode">
+                    <i class="fa-solid fa-moon text-xs" id="themeIcon"></i>
+                </button>
+                <button type="button" onclick="window.openSettingsModal()" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-emerald-400 transition transform hover:rotate-90 flex items-center justify-center shadow-md" title="Settings">
+                    <i class="fa-solid fa-gear text-xs"></i>
+                </button>
+                <button type="button" onclick="window.handleAuthClick()" id="authButton" class="w-8 h-8 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 transition flex items-center justify-center shadow-md overflow-hidden relative" title="Login with Google to Sync">
+                    <i class="fa-brands fa-google text-xs" id="authIcon"></i>
+                    <img id="authUserPic" class="hidden w-full h-full object-cover rounded-2xl" src="" alt="User">
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
+
+        <!-- Motivation Quote Banner -->
+        <div class="glass-card p-4 sm:p-5 rounded-[2.5rem] relative overflow-hidden border-emerald-500/25 animate-float shadow-xl">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
+                <div class="space-y-1 text-center sm:text-left">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                        <i class="fa-solid fa-quote-left text-[9px]"></i> Daily Inspiration
+                    </span>
+                    <p id="quoteText" class="text-xs sm:text-sm font-semibold text-slate-200 italic transition-opacity duration-300">"Small daily habits lead to monumental long-term results."</p>
+                </div>
+                <button type="button" onclick="window.changeQuote()" class="text-xs text-slate-400 hover:text-emerald-400 transition flex items-center gap-1.5 bg-slate-900/90 hover:bg-slate-900 px-3.5 py-2 rounded-2xl border border-slate-800 whitespace-nowrap active:scale-95 shadow">
+                    <i class="fa-solid fa-rotate"></i> Refresh Quote
+                </button>
+            </div>
+        </div>
+
+        <!-- VIP Focus Timer -->
+        <section id="timerPanel" class="glass-card timer-panel p-5 rounded-[2.5rem] border-emerald-500/20 shadow-xl animate-float">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-5">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-11 h-11 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-stopwatch text-lg"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm font-extrabold text-slate-100">VIP Focus Timer</h2>
+                            <span id="timerStatusBadge" class="text-[9px] px-2 py-0.5 rounded-full bg-slate-950 text-slate-500 border border-slate-800 font-bold">READY</span>
+                        </div>
+                        <p id="timerModeText" class="text-[10px] text-slate-400 mt-0.5">Custom focus session • Notifications & Audio ON</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <div class="relative w-28 h-28 flex items-center justify-center shrink-0">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="43" fill="none" stroke="rgba(55,65,81,.45)" stroke-width="6"/>
+                            <circle id="timerProgressRing" class="timer-progress" cx="50" cy="50" r="43" fill="none" stroke="#10b981" stroke-width="6" stroke-linecap="round" stroke-dasharray="0 270.18"/>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <div id="timerDisplay" class="timer-display text-xl font-black text-slate-100">25:00</div>
+                            <div id="timerSessionLabel" class="text-[8px] uppercase tracking-widest text-slate-500 font-bold">FOCUS</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button type="button" onclick="window.timerStartPause()" id="timerStartBtn" class="bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-extrabold px-4 py-2.5 rounded-2xl text-xs transition hover:scale-[1.02] active:scale-95 shadow-lg shadow-emerald-500/20">
+                            <i class="fa-solid fa-play mr-1"></i> Start
+                        </button>
+                        <button type="button" onclick="window.timerReset()" class="bg-slate-950 border border-slate-800 text-slate-300 hover:text-emerald-400 font-bold px-4 py-2.5 rounded-2xl text-xs transition active:scale-95">
+                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+                        </button>
+                        <button type="button" onclick="window.openTimerSettings()" class="bg-slate-950 border border-slate-800 text-slate-300 hover:text-emerald-400 font-bold px-4 py-2.5 rounded-2xl text-xs transition active:scale-95" title="Timer customization">
+                            <i class="fa-solid fa-sliders mr-1"></i> Customize
+                        </button>
+                        <button type="button" onclick="window.testTimerSound()" id="timerSoundBtn" class="bg-slate-950 border border-slate-800 text-emerald-400 font-bold px-3 py-2.5 rounded-2xl text-xs transition active:scale-95" title="Test sound">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 flex flex-wrap items-center justify-center lg:justify-start gap-2 border-t border-slate-800/70 pt-3">
+                <button type="button" onclick="window.setTimerPreset(5)" class="timer-preset px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-[10px] font-bold text-slate-400 hover:text-emerald-400">5m</button>
+                <button type="button" onclick="window.setTimerPreset(15)" class="timer-preset px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-[10px] font-bold text-slate-400 hover:text-emerald-400">15m</button>
+                <button type="button" onclick="window.setTimerPreset(25)" class="timer-preset px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-extrabold text-emerald-400">25m</button>
+                <button type="button" onclick="window.setTimerPreset(45)" class="timer-preset px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-[10px] font-bold text-slate-400 hover:text-emerald-400">45m</button>
+                <button type="button" onclick="window.setTimerPreset(60)" class="timer-preset px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-[10px] font-bold text-slate-400 hover:text-emerald-400">60m</button>
+                <span class="text-[9px] text-slate-500 ml-1"><i class="fa-solid fa-music mr-1"></i> Studio-grade soft chime tones</span>
+            </div>
+        </section>
+
+        <!-- VIP Add-ons: Today at a Glance + Daily Mission -->
+        <section id="vipAddons" class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-3 animate-fadeIn">
+            <!-- Productivity Snapshot -->
+            <div class="glass-card p-3 sm:p-4 rounded-[1.25rem] border-emerald-500/20 shadow-xl flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-2.5">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                            <i class="fa-solid fa-bolt text-[10px]"></i>
+                        </div>
+                        <h3 class="text-xs sm:text-sm font-extrabold text-slate-100 leading-tight">Productivity Snapshot</h3>
+                    </div>
+                    <span id="focusScoreBadge" class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Focus 0%</span>
+                </div>
+                <div class="grid grid-cols-4 gap-1.5">
+                    <div class="bg-slate-950/60 rounded-lg p-1.5 sm:p-2 border border-slate-800/70 flex flex-col items-center sm:items-start text-center sm:text-left">
+                        <div class="text-[8px] sm:text-[9px] text-slate-500 uppercase font-bold tracking-wider">Tasks</div>
+                        <div id="glanceTasks" class="text-sm font-black text-slate-100 mt-0.5">0/0</div>
+                    </div>
+                    <div class="bg-slate-950/60 rounded-lg p-1.5 sm:p-2 border border-slate-800/70 flex flex-col items-center sm:items-start text-center sm:text-left">
+                        <div class="text-[8px] sm:text-[9px] text-slate-500 uppercase font-bold tracking-wider">Focus</div>
+                        <div id="glanceFocus" class="text-sm font-black text-cyan-300 mt-0.5">0m</div>
+                    </div>
+                    <div class="bg-slate-950/60 rounded-lg p-1.5 sm:p-2 border border-slate-800/70 flex flex-col items-center sm:items-start text-center sm:text-left">
+                        <div class="text-[8px] sm:text-[9px] text-slate-500 uppercase font-bold tracking-wider">Streak</div>
+                        <div id="glanceStreak" class="text-sm font-black text-amber-300 mt-0.5">0d</div>
+                    </div>
+                    <div class="bg-slate-950/60 rounded-lg p-1.5 sm:p-2 border border-slate-800/70 flex flex-col items-center sm:items-start text-center sm:text-left">
+                        <div class="text-[8px] sm:text-[9px] text-slate-500 uppercase font-bold tracking-wider">Water</div>
+                        <div id="glanceWater" class="text-sm font-black text-teal-300 mt-0.5">0/0</div>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <div class="flex justify-between text-[8px] text-slate-500 font-bold mb-1">
+                        <span class="uppercase tracking-wider">XP Progress</span><span id="glanceXP" class="text-slate-300">0 XP</span>
+                    </div>
+                    <div class="h-1.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+                        <div id="glanceXPBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customized Mission Section -->
+            <div class="glass-card p-3 sm:p-4 rounded-[1.25rem] border-amber-500/20 shadow-xl flex flex-col">
+                <div class="flex items-center justify-between mb-2.5">
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-crosshairs text-amber-400 animate-pulse text-[10px]"></i>
+                        <h3 class="text-xs sm:text-sm font-extrabold text-slate-100">Today's Mission</h3>
+                    </div>
+                    <button type="button" onclick="window.openSettingsModal()" class="text-slate-500 hover:text-amber-400 transition text-[10px]" title="Customize Targets">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                </div>
+                <div id="dailyMissionList" class="space-y-1 text-[10px] sm:text-xs my-auto font-medium"></div>
+            </div>
+        </section>
+
+        <!-- Top Overview Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+            <!-- Target Countdown Card -->
+            <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-amber-500/20 relative overflow-hidden glass-hover animate-float shadow-xl" style="animation-delay: 0.5s;">
+                <div class="absolute -right-3 -bottom-3 text-amber-500/5 text-8xl font-black pointer-events-none uppercase" id="goalWatermark">NEET</div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-hourglass-half"></i> <span id="goalTitleDisplay">Target Goal</span>
+                        </span>
+                        <span class="text-[11px] bg-amber-500/10 text-amber-400 px-3 py-0.5 rounded-full border border-amber-500/20 font-bold" id="deadlineYearText">May 1</span>
+                    </div>
+                    <div class="flex items-baseline gap-2">
+                        <h2 class="text-3xl font-black text-slate-100" id="daysRemaining">0 Days</h2>
+                        <span class="text-xs text-slate-400 font-medium">remaining</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">Target Deadline: <span class="text-slate-200 font-semibold" id="goalTargetDateText">May 1</span></p>
+                </div>
+                <div class="mt-4">
+                    <div class="flex justify-between text-xs mb-1.5 font-semibold">
+                        <span class="text-slate-400">Timeline Progress</span>
+                        <span class="text-amber-400" id="deadlinePercent">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-800">
+                        <div id="deadlineProgressBar" class="bg-gradient-to-r from-amber-500 to-orange-400 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Glass Hydration Tracker Card -->
+            <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-cyan-500/25 relative overflow-hidden glass-hover animate-float shadow-xl" style="animation-delay: 1s;">
+                <div class="absolute top-2 right-3 text-cyan-500/10 text-7xl font-black pointer-events-none">
+                    <i class="fa-solid fa-droplet"></i>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-glass-water"></i> Hydration Tracker (<span id="waterGlassesCountText">0/8</span>)
+                        </span>
+                        <span class="text-[10px] bg-cyan-500/10 text-cyan-300 px-3 py-0.5 rounded-full border border-cyan-500/20 font-bold" id="waterVolumeText">0.0 L</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mb-3">Tap individual glass icons below to fill them:</p>
+                    
+                    <div id="waterGlassesGrid" class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-28 overflow-y-auto p-1 pr-2">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-800">
+                    <div class="flex justify-between text-xs mb-1 font-semibold">
+                        <span class="text-slate-400">Daily Water Progress</span>
+                        <span class="text-cyan-400 font-extrabold" id="waterPercentText">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-800">
+                        <div id="waterProgressBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Performance Card with 360-Degree Rotating Multi-Color Rings -->
+            <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-teal-500/20 bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-teal-950/30 glass-hover animate-float shadow-xl" style="animation-delay: 1.5s;">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-pie"></i> 360° Rotating Rings
+                    </span>
+                    <span class="text-[10px] bg-teal-500/10 text-teal-300 px-2.5 py-0.5 rounded-xl border border-teal-500/20 font-bold">MULTI-COLOR</span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 py-3 my-auto">
+                    <!-- Daily Ring -->
+                    <div class="flex flex-col items-center">
+                        <div class="relative w-14 h-14 flex items-center justify-center rotate-360">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="ringDaily" class="circle-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                        </div>
+                        <span class="absolute mt-5 text-[11px] font-black text-emerald-400 pointer-events-none" id="ringDailyText">0%</span>
+                        <span class="text-[11px] font-bold text-slate-300 mt-2">Daily</span>
+                    </div>
+
+                    <!-- Weekly Ring -->
+                    <div class="flex flex-col items-center">
+                        <div class="relative w-14 h-14 flex items-center justify-center rotate-360" style="animation-direction: reverse; animation-duration: 22s;">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="ringWeekly" class="circle-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                        </div>
+                        <span class="absolute mt-5 text-[11px] font-black text-teal-400 pointer-events-none" id="ringWeeklyText">0%</span>
+                        <span class="text-[11px] font-bold text-slate-300 mt-2">Weekly</span>
+                    </div>
+
+                    <!-- Monthly Ring -->
+                    <div class="flex flex-col items-center">
+                        <div class="relative w-14 h-14 flex items-center justify-center rotate-360" style="animation-duration: 25s;">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="ringMonthly" class="circle-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                        </div>
+                        <span class="absolute mt-5 text-[11px] font-black text-cyan-400 pointer-events-none" id="ringMonthlyText">0%</span>
+                        <span class="text-[11px] font-bold text-slate-300 mt-2">Monthly</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- GRAPH & ANALYTICS SECTION (WITH CLICK-TO-INSPECT) -->
+        <div class="glass-card p-6 rounded-[2.5rem] space-y-6 border-slate-800 shadow-xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+                <div>
+                    <h2 class="text-base font-extrabold text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-simple text-emerald-400"></i> Advanced Dynamic Analytics
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Click on any bar or calendar block to inspect which specific tasks were completed!</p>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800 text-xs font-bold">
+                    <button type="button" onclick="window.switchGraphView('weekly')" id="tabWeekly" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 transition">
+                        7-Day Graph
+                    </button>
+                    <button type="button" onclick="window.switchGraphView('heatmap')" id="tabHeatmap" class="px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition">
+                        Monthly Grid
+                    </button>
+                </div>
+            </div>
+
+            <!-- View 1: 7-Day Visual Bar Graph with Colors -->
+            <div id="weeklyGraphView" class="space-y-4">
+                <div class="flex items-end justify-between gap-2 sm:gap-4 h-48 pt-6 px-2 sm:px-6 bg-slate-950/60 rounded-3xl border border-slate-800/80" id="weeklyBarsContainer">
+                    <!-- Dynamic Bars rendered here -->
+                </div>
+            </div>
+
+            <!-- View 2: Monthly Consistency Heatmap (Clickable with dates) -->
+            <div id="heatmapGraphView" class="hidden space-y-4">
+                <div class="grid grid-cols-7 sm:grid-cols-10 gap-2 p-4 bg-slate-950/60 rounded-3xl border border-slate-800/80" id="monthlyHeatmapContainer">
+                    <!-- Dynamic Grid Blocks rendered here with real dates and click events -->
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN DYNAMIC SCHEDULE & ACHIEVEMENTS SECTION -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Left 7 Cols: Dynamic Tasks -->
+            <div class="lg:col-span-7 space-y-4">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 p-5 rounded-[2.5rem] border border-slate-800 shadow-xl">
+                    <div>
+                        <h2 class="text-base font-extrabold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-400"></i> Daily Schedule & Targets
+                        </h2>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Biochemistry, Physics, Maths, or Routines — your streak stays safe!</p>
+                    </div>
+                    <span class="text-xs font-bold text-slate-300 bg-slate-950 px-4 py-1.5 rounded-full border border-slate-800" id="taskCountText">0/0 Completed</span>
+                </div>
+
+                <!-- ADD TASK FORM WITH RECURRING / TODAY TOGGLE -->
+                <form id="addHabitForm" class="glass-card p-3 rounded-[2rem] flex flex-col gap-2.5 border border-emerald-500/30 shadow-lg relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center relative z-10">
+                        <div class="flex items-center flex-1 min-w-0 bg-slate-950/60 rounded-2xl border border-slate-800 px-3">
+                            <div class="text-emerald-400 pr-2">
+                                <i class="fa-solid fa-rocket text-base animate-pulse"></i>
+                            </div>
+                            <input type="text" id="habitInput" placeholder="Add today's class (e.g., Biochemistry, Physics Rev)..." 
+                                class="bg-transparent text-xs sm:text-sm py-3 w-full text-slate-100 placeholder-slate-400 font-semibold tracking-wide focus:outline-none" required />
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <select id="habitTypeSelect" class="bg-slate-950 border border-slate-800 text-[11px] font-bold text-slate-300 rounded-2xl px-3 py-3 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer">
+                                <option value="today">Today's Class / Target</option>
+                                <option value="daily">Daily Repeating</option>
+                            </select>
+
+                            <button type="submit" class="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-extrabold px-5 py-3 rounded-2xl text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 active:scale-95 whitespace-nowrap">
+                                <span>Add Target</span>
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Habit List Container -->
+                <div id="habitList" class="space-y-3 mt-2">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- Right 5 Cols: ACHIEVEMENTS, BADGES, AND JOURNAL -->
+            <div class="lg:col-span-5 space-y-4">
+                <div class="glass-card p-6 rounded-[2.5rem] space-y-4 border-amber-500/20 shadow-xl">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                        <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-400"></i> Achievements & Badges
+                        </h3>
+                        <span class="text-xs bg-amber-500/10 text-amber-400 px-3 py-0.5 rounded-full border border-amber-500/20 font-mono font-bold" id="badgeCountText">0/8</span>
+                    </div>
+
+                    <!-- Badge Category Filters -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold text-slate-400">
+                        <button type="button" onclick="window.filterBadges('all')" id="filterAll" class="px-3.5 py-1.5 rounded-2xl bg-emerald-500 text-slate-950 whitespace-nowrap shadow active:scale-95 transition">All</button>
+                        <button type="button" onclick="window.filterBadges('streak')" id="filterStreak" class="px-3.5 py-1.5 rounded-2xl bg-slate-950 hover:text-slate-200 border border-slate-800 whitespace-nowrap active:scale-95 transition">Streaks 🔥</button>
+                        <button type="button" onclick="window.filterBadges('xp')" id="filterXP" class="px-3.5 py-1.5 rounded-2xl bg-slate-950 hover:text-slate-200 border border-slate-800 whitespace-nowrap active:scale-95 transition">XP Levels ⚡</button>
+                        <button type="button" onclick="window.filterBadges('special')" id="filterSpecial" class="px-3.5 py-1.5 rounded-2xl bg-slate-950 hover:text-slate-200 border border-slate-800 whitespace-nowrap active:scale-95 transition">Special 💎</button>
+                    </div>
+
+                    <!-- Badges Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="badgesContainer">
+                        <!-- Badges rendered via JS -->
+                    </div>
+                </div>
+                
+                <!-- Daily Reflection Journal -->
+                <div class="glass-card p-6 rounded-[2.5rem] space-y-3 border-indigo-500/20 shadow-xl mt-4">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+                        <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-book-journal-whills text-indigo-400"></i> Daily Reflection
+                        </h3>
+                    </div>
+                    <textarea id="journalInput" oninput="window.saveJournalDebounced(this.value)" placeholder="How did you perform today? What did you learn? Type here..." class="w-full h-24 bg-slate-950/60 border border-slate-800 rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-none"></textarea>
+                    <div class="text-right">
+                        <span id="journalSaveStatus" class="text-[9px] text-slate-500 font-bold transition-opacity">Auto-saved</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- VIP Reward Toast -->
+    <div id="vipRewardToast" class="fixed left-1/2 -translate-x-1/2 bottom-5 z-[100000] hidden">
+        <div class="glass-card px-5 py-3 rounded-2xl border-emerald-400/40 shadow-2xl flex items-center gap-3 animate-modalPop">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
+                <i class="fa-solid fa-gift"></i>
+            </div>
+            <div>
+                <div id="vipRewardTitle" class="text-xs font-black text-slate-100">Reward Unlocked</div>
+                <div id="vipRewardText" class="text-[10px] text-slate-400">+10 XP</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Adjusted Date Calculation helper
+        window.getAdjustedDate = function(offsetDays = 0) {
+            const now = new Date();
+            const resetHour = window._appState?.settings?.resetHour ?? 4; 
+            if (now.getHours() < resetHour) {
+                now.setDate(now.getDate() - 1);
+            }
+            now.setDate(now.getDate() + offsetDays);
+            return now;
+        };
+
+        window.getDateString = function(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        function getAdjustedTodayDateString() {
+            return window.getDateString(window.getAdjustedDate(0));
+        }
+
+        const VIP_COLORS = [
+            '#ef4444', '#3b82f6', '#10b981', '#f59e0b',
+            '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16',
+            '#6366f1', '#f97316', '#14b8a6', '#d946ef'
+        ];
+
+        function getUniqueColor() {
+            if (!state.habits) return VIP_COLORS[0];
+            const usedColors = state.habits.map(h => h.color);
+            for (let i = 0; i < VIP_COLORS.length; i++) {
+                if (!usedColors.includes(VIP_COLORS[i])) {
+                    return VIP_COLORS[i];
+                }
+            }
+            return VIP_COLORS[state.habits.length % VIP_COLORS.length];
+        }
+
+        const BADGES = [
+            { id: 'first_step', name: 'First Step', desc: 'Complete 1st habit', icon: 'fa-shoe-prints', category: 'xp', reqType: 'xp', reqVal: 10 },
+            { id: 'streak_3', name: '3-Day Fire', desc: 'Maintain a 3-day streak', icon: 'fa-fire-flame-curved', category: 'streak', reqType: 'streak', reqVal: 3 },
+            { id: 'streak_7', name: '7-Day Unstoppable', desc: 'Achieve a 7-day streak', icon: 'fa-bolt', category: 'streak', reqType: 'streak', reqVal: 7 },
+            { id: 'streak_14', name: '14-Day Warrior', desc: 'Achieve a 14-day streak', icon: 'fa-shield-halved', category: 'streak', reqType: 'streak', reqVal: 14 },
+            { id: 'streak_30', name: '30-Day Legend', desc: 'Master a 30-day streak', icon: 'fa-crown', category: 'streak', reqType: 'streak', reqVal: 30 },
+            { id: 'level_2', name: 'XP Warrior', desc: 'Earn 100 XP Points', icon: 'fa-medal', category: 'xp', reqType: 'xp', reqVal: 100 },
+            { id: 'habit_collector', name: 'Habit Creator', desc: 'Create 5 active habits', icon: 'fa-layer-group', category: 'special', reqType: 'habits', reqVal: 5 },
+            { id: 'master_500', name: 'Grand Master', desc: 'Reach 500 XP Milestone', icon: 'fa-gem', category: 'special', reqType: 'xp', reqVal: 500 }
+        ];
+
+        const quotes = [
+            "Small daily habits lead to monumental long-term results.",
+            "Discipline is choosing between what you want now and what you want most.",
+            "You do not rise to the level of your goals. You fall to the level of your systems.",
+            "Success is the sum of small efforts, repeated day in and day out.",
+            "Focus on the process, and the results will naturally follow."
+        ];
+
+        const DEFAULT_STATE = {
+            habits: [],
+            xp: 20,
+            level: 1,
+            streak: 0,
+            lastActiveDate: '',
+            history: {},         
+            timestamps: {},      
+            taskArchives: {},    
+            waterLogs: {},
+            focusLogs: {},
+            journal: {},
+            settings: {
+                goalType: 'CUSTOM',
+                goalTitle: 'My Target',
+                goalDate: '2027-05-02',
+                resetHour: 4,
+                waterTarget: 8,
+                missionTaskCount: 3,     
+                missionFocusMinutes: 60, 
+                timer: {
+                    focusMinutes: 25,
+                    breakMinutes: 5,
+                    volume: 0.70,
+                    soundEnabled: true,
+                    repeatEndAlert: true
+                }
+            },
+            welcomeShown: false
+        };
+
+        function safeMerge(defaultObj, savedObj) {
+            if (!savedObj) return defaultObj;
+            try { localStorage.setItem('habitTrackerState_auto_backup', JSON.stringify(savedObj)); } catch(e) {}
+            const merged = { ...defaultObj, ...savedObj };
+            merged.settings = { ...defaultObj.settings, ...(savedObj.settings || {}) };
+            merged.settings.timer = { ...defaultObj.settings.timer, ...(savedObj.settings?.timer || {}) };
+            
+            // Hardened checks against null array issues
+            if (!merged.habits || !Array.isArray(merged.habits)) merged.habits = [];
+            if (!merged.history) merged.history = {};
+            if (!merged.journal) merged.journal = {};
+            if (!merged.settings.missionTaskCount) merged.settings.missionTaskCount = 3;
+            if (!merged.settings.missionFocusMinutes) merged.settings.missionFocusMinutes = 60;
+            if (!merged.taskArchives) merged.taskArchives = {};
+            
+            return merged;
+        }
+
+        let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+        window._appState = state; 
+        let currentBadgeFilter = 'all';
+        let db = null;
+        let auth = null;
+        let userId = null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-habit-app';
+
+        async function initFirebase() {
+            try {
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    onAuthStateChanged(auth, (user) => {
+                        window.updateAuthUI(user);
+                        if (user) {
+                            userId = user.uid;
+                            loadCloudData();
+
+                            // ==========================================
+                            // UNIQUE VISITOR TRACKING LOGIC (1 User = 1 Count)
+                            // ==========================================
+                            try {
+                                const visitorRef = doc(db, 'artifacts', appId, 'public', 'data', 'unique_visitors', userId);
+                                setDoc(visitorRef, {
+                                    name: user.displayName || state.settings.userName || 'Anonymous VIP',
+                                    photo: user.photoURL || '',
+                                    lastVisit: Date.now()
+                                }, { merge: true }); // merge: true double counting rokta hai!
+                            } catch(err) {
+                                console.log("Visitor tracking initialized locally.");
+                            }
+                            // ==========================================
+
+                        }
+                    });
+                } else {
+                    loadLocalStorageFallback();
+                }
+            } catch (e) {
+                console.error("Firebase init error:", e);
+                loadLocalStorageFallback();
+            }
+        }
+
+        window.handleAuthClick = async function() {
+            if(!auth) return window.showVipReward('Error', 'Cloud services not available.');
+            
+            if (auth.currentUser && !auth.currentUser.isAnonymous) {
+                await signOut(auth);
+                window.showVipReward('Logged Out', 'Cloud sync paused. Data is local.');
+            } else {
+                const provider = new GoogleAuthProvider();
+                try {
+                    await signInWithPopup(auth, provider);
+                    window.showVipReward('Cloud Sync Active', 'Logged in via Google successfully!');
+                } catch(e) { 
+                    console.error("Login Error:", e);
+                    window.showVipReward('Login Failed', 'Unable to connect to Google.');
+                }
+            }
+        };
+
+        window.updateAuthUI = function(user) {
+            const btn = document.getElementById('authButton');
+            const icon = document.getElementById('authIcon');
+            const pic = document.getElementById('authUserPic');
+            if(!btn || !icon || !pic) return;
+
+            if (user && !user.isAnonymous) {
+                icon.classList.add('hidden');
+                pic.src = user.photoURL || 'https://placehold.co/40x40/10b981/0f172a?text=U';
+                pic.classList.remove('hidden');
+                btn.title = `Logged in as ${user.displayName}\nClick to logout`;
+            } else {
+                icon.classList.remove('hidden');
+                pic.classList.add('hidden');
+                btn.title = "Login with Google (Cloud Sync)";
+            }
+        };
+
+        function loadLocalStorageFallback() {
+            const saved = localStorage.getItem('habitTrackerState');
+            if (saved) {
+                try {
+                    state = safeMerge(DEFAULT_STATE, JSON.parse(saved));
+                    window._appState = state;
+                } catch (err) {
+                    const backup = localStorage.getItem('habitTrackerState_auto_backup');
+                    if (backup) {
+                        state = safeMerge(DEFAULT_STATE, JSON.parse(backup));
+                    } else {
+                        state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                    }
+                    window._appState = state;
+                }
+            }
+            postStateLoadSetup();
+        }
+
+        async function loadCloudData() {
+            if (!db || !userId) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'habitState');
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const cloudData = docSnap.data();
+                    state = safeMerge(DEFAULT_STATE, cloudData);
+                    window._appState = state;
+                } else {
+                    const localSaved = localStorage.getItem('habitTrackerState');
+                    if (localSaved) {
+                        state = safeMerge(DEFAULT_STATE, JSON.parse(localSaved));
+                        window._appState = state;
+                        await saveCloudDataDirect();
+                    }
+                }
+            } catch (err) { console.error("Error loading cloud data:", err); }
+            postStateLoadSetup();
+        }
+
+        async function saveCloudDataDirect() {
+            if (!db || !userId) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'habitState');
+                await setDoc(docRef, state);
+            } catch (err) { console.error("Cloud save error:", err); }
+        }
+
+        function saveState() {
+            syncTodayArchive();
+            localStorage.setItem('habitTrackerState', JSON.stringify(state));
+            window._appState = state;
+            saveCloudDataDirect();
+            render();
+        }
+
+        let journalTimeout;
+        window.saveJournalDebounced = function(val) {
+            clearTimeout(journalTimeout);
+            const status = document.getElementById('journalSaveStatus');
+            if(status) { status.innerText = 'Saving...'; status.classList.remove('opacity-0'); }
+            
+            journalTimeout = setTimeout(() => {
+                const today = getAdjustedTodayDateString();
+                if(!state.journal) state.journal = {};
+                state.journal[today] = val;
+                saveState();
+                if(status) { 
+                    status.innerText = 'Auto-saved ✓'; 
+                    setTimeout(()=> { status.classList.add('opacity-0'); }, 2000); 
+                }
+            }, 800);
+        };
+
+        window.openLeaderboard = async function() {
+            const modal = document.getElementById('leaderboardModal');
+            const list = document.getElementById('leaderboardList');
+            if(modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+            if(list) list.innerHTML = '<div class="text-center text-slate-400 py-6"><i class="fa-solid fa-spinner fa-spin text-xl"></i><div class="text-xs mt-2">Loading Global Rankings...</div></div>';
+            
+            if (db && userId) {
+                try {
+                    const lbRef = doc(db, 'artifacts', appId, 'public', 'data', 'leaderboard', userId);
+                    const userName = (auth.currentUser && !auth.currentUser.isAnonymous && auth.currentUser.displayName) 
+                        ? auth.currentUser.displayName 
+                        : `Guest_${userId.substring(0,5)}`;
+                    const photo = (auth.currentUser && !auth.currentUser.isAnonymous && auth.currentUser.photoURL) 
+                        ? auth.currentUser.photoURL 
+                        : '';
+                    await setDoc(lbRef, { name: userName, xp: state.xp, level: state.level, photo: photo, updatedAt: Date.now() });
+                } catch(e) { console.error("Leaderboard update failed", e); }
+            }
+
+            if (db) {
+                try {
+                    const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'leaderboard');
+                    const snapshot = await getDocs(colRef);
+                    let players = [];
+                    snapshot.forEach(doc => { players.push({ id: doc.id, ...doc.data() }); });
+                    
+                    players.sort((a, b) => (b.xp || 0) - (a.xp || 0));
+                    players = players.slice(0, 50);
+
+                    if(list) {
+                        list.innerHTML = '';
+                        players.forEach((p, index) => {
+                            let rankIcon = `<span class="text-slate-500 font-bold w-5">${index+1}</span>`;
+                            if(index === 0) rankIcon = `<i class="fa-solid fa-trophy text-yellow-400 w-5 text-base shadow-yellow-500"></i>`;
+                            if(index === 1) rankIcon = `<i class="fa-solid fa-medal text-slate-300 w-5 text-base"></i>`;
+                            if(index === 2) rankIcon = `<i class="fa-solid fa-medal text-orange-400 w-5 text-base"></i>`;
+
+                            const isMe = p.id === userId;
+                            const picHTML = p.photo 
+                                ? `<img src="${p.photo}" class="w-7 h-7 rounded-full border border-slate-700 object-cover">` 
+                                : `<div class="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-[10px]"><i class="fa-solid fa-user"></i></div>`;
+
+                            list.innerHTML += `
+                                <div class="flex items-center justify-between p-3 rounded-xl border transition ${isMe ? 'bg-amber-950/30 border-amber-500/50 shadow-md shadow-amber-500/10 scale-[1.02]' : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'}">
+                                    <div class="flex items-center gap-3">
+                                        ${rankIcon}
+                                        ${picHTML}
+                                        <div class="text-xs font-bold ${isMe ? 'text-amber-400' : 'text-slate-200'}">${p.name} ${isMe ? '<span class="text-[9px] bg-amber-500/20 px-1 rounded ml-1">You</span>' : ''}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-[10px] text-slate-400 uppercase tracking-wider">Lvl ${p.level || 1}</div>
+                                        <div class="text-xs font-black text-emerald-400">${p.xp || 0} XP</div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+                } catch(e) { 
+                    console.error("Fetch leaderboard failed", e);
+                    if(list) list.innerHTML = '<div class="text-center text-rose-400 py-4">Failed to load leaderboard.</div>';
+                }
+            } else {
+                if(list) list.innerHTML = '<div class="text-center text-slate-400 py-4">Leaderboard unavailable offline.</div>';
+            }
+        };
+
+        window.closeLeaderboard = function() {
+            const modal = document.getElementById('leaderboardModal');
+            if(modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
+        };
+
+        window.toggleTheme = function() {
+            const htmlEl = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem('habitTheme', 'light');
+                if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem('habitTheme', 'dark');
+                if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+            }
+        };
+
+        function syncTodayArchive() {
+            const today = getAdjustedTodayDateString();
+            const todayRecord = state.history[today] || {};
+            const todayTimestamps = state.timestamps[today] || {};
+            if (!state.taskArchives) state.taskArchives = {};
+            let existingArchive = state.taskArchives[today] || [];
+            let archiveMap = {};
+            existingArchive.forEach(item => { archiveMap[item.id] = item; });
+
+            state.habits.forEach(h => {
+                archiveMap[h.id] = {
+                    id: h.id, name: h.name, color: h.color || '#10b981',
+                    type: h.type || 'today', completed: !!todayRecord[h.id], time: todayTimestamps[h.id] || ''
+                };
+            });
+            state.taskArchives[today] = Object.values(archiveMap);
+        }
+
+        function autoRecoverStreak() {
+            let currentStreak = 0;
+            let checkDateOffset = 0;
+            let missed = false;
+
+            const isDaySuccessful = (dateStr) => {
+                if (state.taskArchives && state.taskArchives[dateStr] && state.taskArchives[dateStr].length > 0) {
+                    const arch = state.taskArchives[dateStr];
+                    const doneCount = arch.filter(item => item.completed).length;
+                    return (doneCount >= 1) && (doneCount / arch.length >= 0.49);
+                }
+                const rec = state.history[dateStr] || {};
+                const keys = Object.keys(rec);
+                if (keys.length === 0) return false;
+                const completedCount = keys.filter(k => !!rec[k]).length;
+                return completedCount >= 1;
+            };
+
+            const todayStr = window.getDateString(window.getAdjustedDate(0));
+            if (isDaySuccessful(todayStr)) { checkDateOffset = 0; } else { checkDateOffset = -1; }
+
+            while (!missed && currentStreak < 365) {
+                const dStr = window.getDateString(window.getAdjustedDate(checkDateOffset));
+                if (isDaySuccessful(dStr)) { currentStreak++; checkDateOffset--; } else { missed = true; }
+            }
+            state.streak = currentStreak;
+        }
+
+        function postStateLoadSetup() {
+            const todayStr = getAdjustedTodayDateString();
+            if (state.lastActiveDate && state.lastActiveDate !== todayStr) {
+                state.habits = state.habits.filter(h => h.type !== 'today');
+            }
+            state.lastActiveDate = todayStr;
+            autoRecoverStreak();
+            render();
+            checkWelcomeModal();
+        }
+
+        let audioCtx = null;
+        function ensureAudio() {
+            try {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return null;
+                if (!audioCtx) audioCtx = new AC();
+                if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+                return audioCtx;
+            } catch (e) { return null; }
+        }
+
+        function playHarmonicTone(freq, startAt, duration, volume) {
+            const ctx = ensureAudio();
+            if (!ctx) return;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, startAt);
+            gain.gain.setValueAtTime(0.0001, startAt);
+            gain.gain.exponentialRampToValueAtTime(Math.max(0.001, volume), startAt + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(startAt);
+            osc.stop(startAt + duration + 0.05);
+        }
+
+        function playTaskCompleteSound() {
+            const s = state.settings.timer || {};
+            if (s.soundEnabled === false) return;
+            const ctx = ensureAudio();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            const v = Math.min(0.75, Math.max(0.05, Number(s.volume) || 0.70));
+            playHarmonicTone(1046.50, now, 0.12, v * 0.7);
+            playHarmonicTone(1318.51, now + 0.09, 0.14, v * 0.85);
+            playHarmonicTone(1567.98, now + 0.18, 0.22, v);
+        }
+
+        function playTimerEndSound() {
+            const s = state.settings.timer || {};
+            if (s.soundEnabled === false) return;
+            const ctx = ensureAudio();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            const v = Math.min(0.85, Math.max(0.05, Number(s.volume) || 0.70));
+            const repeats = s.repeatEndAlert ? 3 : 1;
+            
+            for (let r = 0; r < repeats; r++) {
+                const base = now + r * 0.65;
+                playHarmonicTone(523.25, base, 0.35, v * 0.7);       
+                playHarmonicTone(659.25, base + 0.12, 0.35, v * 0.8); 
+                playHarmonicTone(783.99, base + 0.24, 0.45, v);       
+            }
+        }
+
+        let timerInterval = null;
+        let timerRemaining = 25 * 60;
+        let timerTotal = 25 * 60;
+        let timerRunning = false;
+        let timerMode = 'focus';
+
+        function getTimerSettings() {
+            const fallback = { focusMinutes: 25, breakMinutes: 5, volume: 0.70, soundEnabled: true, repeatEndAlert: true };
+            if (!state.settings) state.settings = {};
+            if (!state.settings.timer) state.settings.timer = {};
+            state.settings.timer = { ...fallback, ...state.settings.timer };
+            return state.settings.timer;
+        }
+
+        function formatTimerTime(seconds) {
+            const safe = Math.max(0, Math.floor(Number(seconds) || 0));
+            const h = Math.floor(safe / 3600);
+            const m = Math.floor((safe % 3600) / 60);
+            const s = safe % 60;
+            return h > 0 ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+
+        function renderTimer() {
+            const display = document.getElementById('timerDisplay');
+            const ring = document.getElementById('timerProgressRing');
+            const status = document.getElementById('timerStatusBadge');
+            const startBtn = document.getElementById('timerStartBtn');
+            const modeText = document.getElementById('timerModeText');
+            const sessionLabel = document.getElementById('timerSessionLabel');
+            const panel = document.getElementById('timerPanel');
+            const soundBtn = document.getElementById('timerSoundBtn');
+            if (!display) return;
+
+            display.textContent = formatTimerTime(timerRemaining);
+            const circumference = 2 * Math.PI * 43;
+            const pct = timerTotal > 0 ? Math.max(0, Math.min(1, timerRemaining / timerTotal)) : 0;
+            if (ring) ring.setAttribute('stroke-dasharray', `${circumference * pct} ${circumference}`);
+            if (sessionLabel) sessionLabel.textContent = timerMode === 'focus' ? 'FOCUS' : 'BREAK';
+
+            const soundOn = !!getTimerSettings().soundEnabled;
+            if (soundBtn) {
+                soundBtn.classList.toggle('timer-sound-on', soundOn);
+                soundBtn.innerHTML = soundOn ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark"></i>';
+            }
+            const notifOn = ('Notification' in window && Notification.permission === 'granted');
+            if (modeText) modeText.textContent = `${timerMode === 'focus' ? 'Focus session' : 'Break session'} • Audio ${soundOn?'ON':'OFF'} • Notifications ${notifOn?'ON':'OFF'}`;
+            if (status) {
+                status.textContent = timerRunning ? 'RUNNING' : (timerRemaining === 0 ? 'DONE' : 'READY');
+                status.className = `text-[9px] px-2 py-0.5 rounded-full border font-bold ${timerRunning ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : timerRemaining === 0 ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-slate-950 text-slate-500 border-slate-800'}`;
+            }
+            if (startBtn) startBtn.innerHTML = timerRunning ? '<i class="fa-solid fa-pause mr-1"></i> Pause' : '<i class="fa-solid fa-play mr-1"></i> Start';
+            if (panel) panel.classList.toggle('timer-running', timerRunning);
+        }
+
+        function finishTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            timerRemaining = 0;
+            renderTimer();
+            playTimerEndSound();
+            triggerConfetti();
+            
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(timerMode === 'focus' ? "Focus Complete! 🚀" : "Break Over! 📚", {
+                    body: timerMode === 'focus' ? "You earned +15 XP. Time for a well-deserved break!" : "Time to get back into focus mode!",
+                    icon: "https://placehold.co/192x192/10b981/0f172a?text=HabitPro" 
+                });
+            }
+
+            const s = getTimerSettings();
+            if(timerMode === 'focus') {
+                const today = getAdjustedTodayDateString();
+                if(!state.focusLogs) state.focusLogs = {};
+                state.focusLogs[today] = (state.focusLogs[today] || 0) + s.focusMinutes;
+                state.xp += 15;
+                state.level = Math.floor(state.xp / 50) + 1;
+                saveState();
+                window.showVipReward('Focus Session Completed!', '+15 XP');
+            }
+
+            const nextMode = timerMode === 'focus' ? 'break' : 'focus';
+            const nextMinutes = nextMode === 'focus' ? s.focusMinutes : s.breakMinutes;
+            timerMode = nextMode;
+            timerTotal = Math.max(60, Number(nextMinutes) * 60);
+            timerRemaining = timerTotal;
+            renderTimer();
+        }
+
+        window.timerStartPause = function() {
+            ensureAudio();
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(() => renderTimer());
+            }
+
+            if (timerRunning) {
+                timerRunning = false;
+                clearInterval(timerInterval);
+                timerInterval = null;
+                renderTimer();
+                return;
+            }
+            if (timerRemaining <= 0) {
+                const s = getTimerSettings();
+                timerTotal = Math.max(60, Number(timerMode === 'focus' ? s.focusMinutes : s.breakMinutes) * 60);
+                timerRemaining = timerTotal;
+            }
+            timerRunning = true;
+            renderTimer();
+            timerInterval = setInterval(() => {
+                timerRemaining = Math.max(0, timerRemaining - 1);
+                if (timerRemaining <= 0) finishTimer();
+                else renderTimer();
+            }, 1000);
+        };
+
+        window.timerReset = function() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            const s = getTimerSettings();
+            timerMode = 'focus';
+            timerTotal = Math.max(60, Number(s.focusMinutes) * 60);
+            timerRemaining = timerTotal;
+            renderTimer();
+        };
+
+        window.setTimerPreset = function(minutes) {
+            const mins = Math.max(1, Math.min(180, Number(minutes) || 25));
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            const s = getTimerSettings();
+            s.focusMinutes = mins;
+            timerMode = 'focus';
+            timerTotal = mins * 60;
+            timerRemaining = timerTotal;
+            renderTimer();
+        };
+
+        window.testTimerSound = function() { ensureAudio(); playTimerEndSound(); };
+
+        function updateLiveClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            const dateStr = window.getAdjustedDate(0).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: '2-digit', year: 'numeric' });
+            
+            const liveTimeEl = document.getElementById('liveTimeText');
+            const liveDateEl = document.getElementById('liveDateText');
+            if (liveTimeEl) liveTimeEl.innerHTML = `<i class="fa-regular fa-clock text-[8px]"></i> ${timeStr}`;
+            if (liveDateEl) liveDateEl.innerText = dateStr;
+        }
+
+        window.downloadBackup = function() {
+            syncTodayArchive();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "HabitTracker_VIP_Schedule_" + getAdjustedTodayDateString() + ".json");
+            document.body.appendChild(downloadAnchorNode); 
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        };
+
+        window.triggerRestore = function() { document.getElementById('backupFileInput').click(); };
+
+        window.restoreBackup = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    if (importedState && (importedState.habits || importedState.taskArchives)) {
+                        state = safeMerge(DEFAULT_STATE, importedState);
+                        window._appState = state;
+                        autoRecoverStreak(); 
+                        saveState(); 
+                        window.showVipReward("Data Restored!", "Your schedule and history are fully restored 🎉");
+                        window.closeSettingsModal();
+                    } else {
+                        window.showVipReward("Error!", "Invalid backup file.");
+                    }
+                } catch (err) {
+                    window.showVipReward("Error!", "File may be corrupted.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; 
+        };
+
+        window.openSettingsModal = function() {
+            const selectEl = document.getElementById('goalTypeSelect');
+            const titleEl = document.getElementById('goalTitleInput');
+            const dateEl = document.getElementById('goalDateInput');
+            const resetEl = document.getElementById('resetHourInput');
+            const waterEl = document.getElementById('waterTargetInput');
+            const missionTaskEl = document.getElementById('missionTaskInput');
+            const missionFocusEl = document.getElementById('missionFocusInput');
+
+            if (selectEl) selectEl.value = state.settings.goalType || 'CUSTOM';
+            if (titleEl) titleEl.value = state.settings.goalTitle || '';
+            if (dateEl) dateEl.value = state.settings.goalDate || '';
+            if (resetEl) resetEl.value = String(state.settings.resetHour ?? 4);
+            if (waterEl) waterEl.value = String(state.settings.waterTarget ?? 8);
+            if (missionTaskEl) missionTaskEl.value = state.settings.missionTaskCount || 3;
+            if (missionFocusEl) missionFocusEl.value = state.settings.missionFocusMinutes || 60;
+
+            const modal = document.getElementById('settingsModal');
+            if (modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        };
+
+        window.closeSettingsModal = function() {
+            const modal = document.getElementById('settingsModal');
+            if (modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
+        };
+
+        function saveSettings(e) {
+            e.preventDefault();
+            const selectEl = document.getElementById('goalTypeSelect');
+            const titleEl = document.getElementById('goalTitleInput');
+            const dateEl = document.getElementById('goalDateInput');
+            const resetEl = document.getElementById('resetHourInput');
+            const waterEl = document.getElementById('waterTargetInput');
+            const missionTaskEl = document.getElementById('missionTaskInput');
+            const missionFocusEl = document.getElementById('missionFocusInput');
+
+            state.settings = {
+                goalType: selectEl ? selectEl.value : 'NEET',
+                goalTitle: titleEl ? titleEl.value : 'Target Goal',
+                goalDate: dateEl ? dateEl.value : '2027-05-02',
+                resetHour: resetEl ? parseInt(resetEl.value, 10) : 4,
+                waterTarget: waterEl ? Math.max(1, parseInt(waterEl.value, 10)) : 8,
+                missionTaskCount: missionTaskEl ? parseInt(missionTaskEl.value, 10) : 3,
+                missionFocusMinutes: missionFocusEl ? parseInt(missionFocusEl.value, 10) : 60,
+                timer: state.settings.timer 
+            };
+            window._appState = state;
+            saveState();
+            window.closeSettingsModal();
+        }
+
+        window.openTimerSettings = function() {
+            const s = getTimerSettings();
+            const modal = document.getElementById('timerSettingsModal');
+            if (document.getElementById('timerFocusInput')) document.getElementById('timerFocusInput').value = s.focusMinutes;
+            if (document.getElementById('timerBreakInput')) document.getElementById('timerBreakInput').value = s.breakMinutes;
+            if (document.getElementById('timerVolumeInput')) document.getElementById('timerVolumeInput').value = Math.round(s.volume * 100);
+            if (document.getElementById('timerVolumeValue')) document.getElementById('timerVolumeValue').textContent = `${Math.round(s.volume * 100)}%`;
+            if (document.getElementById('timerSoundInput')) document.getElementById('timerSoundInput').checked = !!s.soundEnabled;
+            if (document.getElementById('timerRepeatInput')) document.getElementById('timerRepeatInput').checked = !!s.repeatEndAlert;
+            if (modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        };
+
+        window.closeTimerSettings = function() {
+            const modal = document.getElementById('timerSettingsModal');
+            if (modal) modal.classList.add('hidden');
+            if (!document.getElementById('settingsModal') || document.getElementById('settingsModal').classList.contains('hidden')) { document.body.style.overflow = 'auto'; }
+        };
+
+        function saveTimerSettings(e) {
+            e.preventDefault();
+            const f = Math.max(1, Math.min(180, parseInt(document.getElementById('timerFocusInput')?.value, 10) || 25));
+            const b = Math.max(1, Math.min(60, parseInt(document.getElementById('timerBreakInput')?.value, 10) || 5));
+            const volPct = Math.max(10, Math.min(100, parseInt(document.getElementById('timerVolumeInput')?.value, 10) || 70));
+            state.settings.timer = {
+                focusMinutes: f, breakMinutes: b, volume: volPct / 100,
+                soundEnabled: !!document.getElementById('timerSoundInput')?.checked, repeatEndAlert: !!document.getElementById('timerRepeatInput')?.checked
+            };
+            window.timerReset();
+            saveState();
+            window.closeTimerSettings();
+            ensureAudio();
+        }
+
+        function checkWelcomeModal() {
+            if (!state.welcomeShown) {
+                const modal = document.getElementById('welcomeModal');
+                if (modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+            }
+        }
+
+        window.closeWelcomeModal = function() {
+            state.welcomeShown = true;
+            const modal = document.getElementById('welcomeModal');
+            if (modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
+            saveState();
+            triggerConfetti();
+        };
+
+        window.toggleWaterGlass = function(glassIndex) {
+            const today = getAdjustedTodayDateString();
+            const currentWater = state.waterLogs[today] || 0;
+            const target = state.settings.waterTarget || 8;
+            let newVal = glassIndex + 1;
+            if (currentWater === newVal) newVal = glassIndex;
+
+            state.waterLogs[today] = Math.max(0, Math.min(target, newVal));
+            if (newVal === target && currentWater < target) {
+                triggerConfetti();
+                state.xp += 15;
+                state.level = Math.floor(state.xp / 50) + 1;
+                window.showVipReward('Hydration Complete!', '+15 XP');
+            }
+            saveState();
+        };
+
+        window.addHabit = function(name, type = 'today') {
+            const newHabit = {
+                id: 'task_' + Date.now(),
+                name: name,
+                color: getUniqueColor(),
+                type: type, 
+                createdAt: getAdjustedTodayDateString()
+            };
+            state.habits.push(newHabit);
+            autoRecoverStreak();
+            saveState();
+        };
+
+        window.deleteHabit = function(id) {
+            const today = getAdjustedTodayDateString();
+            state.habits = state.habits.filter(h => h.id !== id);
+            if (state.taskArchives && state.taskArchives[today]) {
+                state.taskArchives[today] = state.taskArchives[today].filter(h => h.id !== id);
+            }
+            autoRecoverStreak();
+            saveState(); 
+        };
+
+        window.toggleHabit = function(id) {
+            const today = getAdjustedTodayDateString();
+            if (!state.history[today]) state.history[today] = {};
+            if (!state.timestamps[today]) state.timestamps[today] = {};
+
+            const habit = state.habits.find(h => h.id === id);
+            if(!habit) return;
+
+            const isCompleted = !state.history[today][id];
+            const card = document.getElementById(`habit-card-${id}`);
+            const tickIcon = document.getElementById(`tick-icon-${id}`);
+            
+            if (card) {
+                if (isCompleted) {
+                    card.classList.add('habit-completed', 'border-emerald-500/40', 'bg-emerald-950/20');
+                    card.classList.remove('border-slate-800');
+                    if(tickIcon) { tickIcon.classList.remove('opacity-0'); tickIcon.classList.add('opacity-100', 'text-slate-950'); }
+                } else {
+                    card.classList.remove('habit-completed', 'border-emerald-500/40', 'bg-emerald-950/20');
+                    card.classList.add('border-slate-800');
+                    if(tickIcon) { tickIcon.classList.add('opacity-0'); tickIcon.classList.remove('opacity-100', 'text-slate-950'); }
+                }
+            }
+
+            state.history[today][id] = isCompleted;
+
+            if (isCompleted) {
+                const now = new Date();
+                state.timestamps[today][id] = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                state.xp += 10;
+                triggerConfetti();
+                playTaskCompleteSound();
+                window.showVipReward('Task Completed!', '+10 XP');
+                
+                if (habit.type === 'today') {
+                    syncTodayArchive(); // Force save to archive so it doesn't lose progress metrics
+                    if (card) {
+                        card.style.pointerEvents = 'none'; // stop double clicks causing glitches
+                        setTimeout(() => {
+                            card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateX(100px) scale(0.9)';
+                            setTimeout(() => {
+                                state.habits = state.habits.filter(h => h.id !== id);
+                                state.level = Math.floor(state.xp / 50) + 1;
+                                autoRecoverStreak();
+                                saveState();
+                            }, 500);
+                        }, 400); 
+                        return; // exit early, skip synchronous save to let animation run
+                    } else {
+                        state.habits = state.habits.filter(h => h.id !== id);
+                    }
+                }
+            } else {
+                delete state.timestamps[today][id];
+                state.xp = Math.max(0, state.xp - 10);
+            }
+
+            state.level = Math.floor(state.xp / 50) + 1;
+            autoRecoverStreak(); 
+            requestAnimationFrame(() => { saveState(); });
+        };
+
+        function triggerConfetti() {
+            if (typeof window.confetti === 'function') {
+                window.confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+            }
+        }
+
+        function updateDeadlineTracker() {
+            const now = new Date();
+            const targetDateStr = state.settings.goalDate || `${now.getFullYear() + 1}-05-02`;
+            let targetDate = new Date(targetDateStr);
+            if (isNaN(targetDate.getTime())) targetDate = new Date(now.getFullYear() + 1, 4, 2);
+
+            const titleEl = document.getElementById('goalTitleDisplay');
+            const watermarkEl = document.getElementById('goalWatermark');
+            if (titleEl) titleEl.innerText = state.settings.goalTitle || 'Target Goal';
+            if (watermarkEl) watermarkEl.innerText = (state.settings.goalType || 'GOAL').substring(0, 6);
+
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            if (document.getElementById('deadlineYearText')) document.getElementById('deadlineYearText').innerText = targetDate.toLocaleDateString('en-US', options);
+            if (document.getElementById('goalTargetDateText')) document.getElementById('goalTargetDateText').innerText = targetDate.toLocaleDateString('en-US', options);
+
+            const diffTime = targetDate.getTime() - now.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (document.getElementById('daysRemaining')) document.getElementById('daysRemaining').innerText = diffDays > 0 ? `${diffDays} Days` : '0 Days';
+
+            const totalDaysInCycle = 365;
+            const elapsed = totalDaysInCycle - Math.max(0, diffDays);
+            const percentage = Math.min(100, Math.max(0, Math.round((elapsed / totalDaysInCycle) * 100)));
+
+            if (document.getElementById('deadlinePercent')) document.getElementById('deadlinePercent').innerText = `${percentage}%`;
+            if (document.getElementById('deadlineProgressBar')) document.getElementById('deadlineProgressBar').style.width = `${percentage}%`;
+        }
+
+        window.changeQuote = function() {
+            const random = quotes[Math.floor(Math.random() * quotes.length)];
+            const quoteEl = document.getElementById('quoteText');
+            if (quoteEl) {
+                quoteEl.style.opacity = '0';
+                setTimeout(() => { quoteEl.innerText = `"${random}"`; quoteEl.style.opacity = '1'; }, 200);
+            }
+        };
+
+        window.openDayInspector = function(dateStr) {
+            const modal = document.getElementById('dayInspectorModal');
+            if (!modal) return;
+            const parts = dateStr.split('-');
+            const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            if (document.getElementById('inspectorDateTitle')) document.getElementById('inspectorDateTitle').innerText = dObj.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+            if (document.getElementById('inspectorDateSubtitle')) document.getElementById('inspectorDateSubtitle').innerText = `Full Schedule Log for ${dateStr}`;
+
+            if (document.getElementById('inspectorWaterStat')) document.getElementById('inspectorWaterStat').innerText = `${state.waterLogs[dateStr] || 0} Gl`;
+            if (document.getElementById('inspectorFocusStat')) document.getElementById('inspectorFocusStat').innerText = `${state.focusLogs[dateStr] || 0}m`;
+
+            let dayTasks = [];
+            if (state.taskArchives && state.taskArchives[dateStr] && state.taskArchives[dateStr].length > 0) {
+                dayTasks = state.taskArchives[dateStr];
+            } else {
+                const dayRec = state.history[dateStr] || {};
+                const dayTimes = state.timestamps[dateStr] || {};
+                dayTasks = state.habits.map(h => ({ id: h.id, name: h.name, color: h.color || '#10b981', completed: !!dayRec[h.id], time: dayTimes[h.id] || '' }));
+            }
+
+            const completedCount = dayTasks.filter(t => t.completed).length;
+            if (document.getElementById('inspectorTaskStat')) document.getElementById('inspectorTaskStat').innerText = `${completedCount}/${dayTasks.length} Done`;
+
+            const listEl = document.getElementById('inspectorTasksList');
+            if (listEl) {
+                listEl.innerHTML = '';
+                if (dayTasks.length === 0) {
+                    listEl.innerHTML = `<div class="p-3 text-center text-slate-500 italic bg-slate-950/40 rounded-xl">No tasks logged on this date.</div>`;
+                } else {
+                    dayTasks.forEach(item => {
+                        listEl.innerHTML += `
+                            <div class="p-2.5 rounded-xl border flex items-center justify-between ${item.completed ? 'bg-emerald-950/20 border-emerald-500/30 text-slate-200' : 'bg-slate-950/40 border-slate-800/80 text-slate-400'}">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full" style="background-color: ${item.color || '#10b981'}"></div>
+                                    <span class="font-semibold ${item.completed ? 'text-slate-100' : 'line-through text-slate-500'}">${item.name}</span>
+                                </div>
+                                <div class="text-[10px] flex items-center gap-1.5 font-mono">
+                                    ${item.completed ? `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> ${item.time || 'Completed'}</span>` : `<span class="text-slate-500">Pending</span>`}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            }
+            modal.classList.remove('hidden'); document.body.style.overflow = 'hidden';
+        };
+
+        window.closeDayInspector = function() {
+            const modal = document.getElementById('dayInspectorModal');
+            if (modal) modal.classList.add('hidden'); document.body.style.overflow = 'auto';
+        };
+
+        window.switchGraphView = function(view) {
+            const tabWeekly = document.getElementById('tabWeekly');
+            const tabHeatmap = document.getElementById('tabHeatmap');
+            const weeklyView = document.getElementById('weeklyGraphView');
+            const heatmapView = document.getElementById('heatmapGraphView');
+
+            if (tabWeekly && tabHeatmap && weeklyView && heatmapView) {
+                if (view === 'weekly') {
+                    tabWeekly.className = "px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 transition";
+                    tabHeatmap.className = "px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition";
+                    weeklyView.classList.remove('hidden'); heatmapView.classList.add('hidden');
+                } else {
+                    tabHeatmap.className = "px-3.5 py-1.5 rounded-xl bg-emerald-500 text-slate-950 transition";
+                    tabWeekly.className = "px-3.5 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition";
+                    heatmapView.classList.remove('hidden'); weeklyView.classList.add('hidden');
+                }
+            }
+            renderAnalyticsGraphs();
+        };
+
+        window.filterBadges = function(cat) {
+            currentBadgeFilter = cat;
+            ['All', 'Streak', 'XP', 'Special'].forEach(b => {
+                const btnEl = document.getElementById(`filter${b}`);
+                if (btnEl) {
+                    if (b.toLowerCase() === cat) btnEl.className = "px-3.5 py-1.5 rounded-2xl bg-emerald-500 text-slate-950 whitespace-nowrap shadow active:scale-95 transition";
+                    else btnEl.className = "px-3.5 py-1.5 rounded-2xl bg-slate-950 hover:text-slate-200 border border-slate-800 whitespace-nowrap active:scale-95 transition";
+                }
+            });
+            renderBadges();
+        };
+
+        function calculateAnalytics() {
+            const today = getAdjustedTodayDateString();
+            let todayCompleted = 0; let totalHabits = 0;
+
+            if (state.taskArchives && state.taskArchives[today] && state.taskArchives[today].length > 0) {
+                const arch = state.taskArchives[today];
+                totalHabits = arch.length;
+                todayCompleted = arch.filter(item => item.completed).length;
+            } else {
+                const todayRecord = state.history[today] || {};
+                totalHabits = state.habits.length;
+                state.habits.forEach(h => { if (todayRecord[h.id]) todayCompleted++; });
+            }
+
+            const todayPct = totalHabits === 0 ? 0 : Math.round((todayCompleted / totalHabits) * 100);
+
+            function getAverageForDays(daysCount) {
+                let completedDays = 0;
+                for (let i = 0; i < daysCount; i++) {
+                    const dStr = window.getDateString(window.getAdjustedDate(-i));
+                    const dayRec = state.history[dStr] || {};
+                    const arch = state.taskArchives ? state.taskArchives[dStr] : null;
+                    if (arch && arch.length > 0) {
+                        const done = arch.filter(x => x.completed).length;
+                        if (done > 0 && done / arch.length >= 0.5) completedDays++;
+                    } else {
+                        let c = 0;
+                        state.habits.forEach(h => { if (dayRec[h.id]) c++; });
+                        if (c > 0 && c / (totalHabits || 1) >= 0.5) completedDays++;
+                    }
+                }
+                return Math.round((completedDays / daysCount) * 100);
+            }
+            return { todayPct, weeklyPct: getAverageForDays(7), monthlyPct: getAverageForDays(30), todayCompleted };
+        }
+
+        function updatePerformanceRings(daily, weekly, monthly) {
+            function setRing(id, pct) {
+                const ring = document.getElementById(id);
+                if (ring) {
+                    ring.setAttribute('stroke-dasharray', `${pct}, 100`);
+                    ring.style.stroke = pct >= 75 ? '#22c55e' : pct >= 40 ? '#06b6d4' : pct > 0 ? '#a855f7' : '#374151';
+                }
+            }
+            setRing('ringDaily', daily); setRing('ringWeekly', weekly); setRing('ringMonthly', monthly);
+
+            if (document.getElementById('ringDailyText')) document.getElementById('ringDailyText').innerText = `${daily}%`;
+            if (document.getElementById('ringWeeklyText')) document.getElementById('ringWeeklyText').innerText = `${weekly}%`;
+            if (document.getElementById('ringMonthlyText')) document.getElementById('ringMonthlyText').innerText = `${monthly}%`;
+        }
+
+        function renderAnalyticsGraphs() {
+            const weeklyBarsContainer = document.getElementById('weeklyBarsContainer');
+            if (weeklyBarsContainer) {
+                weeklyBarsContainer.innerHTML = '';
+                const daysArr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                for (let i = 6; i >= 0; i--) {
+                    const d = window.getAdjustedDate(-i);
+                    const dateStr = window.getDateString(d);
+                    const dayName = daysArr[d.getDay()];
+                    
+                    let completedTasksColors = []; let totalTasksCount = 0;
+
+                    if (state.taskArchives && state.taskArchives[dateStr] && state.taskArchives[dateStr].length > 0) {
+                        const arch = state.taskArchives[dateStr];
+                        totalTasksCount = arch.length;
+                        arch.forEach(item => { if (item.completed) completedTasksColors.push(item.color || '#10b981'); });
+                    } else {
+                        const dayRec = state.history[dateStr] || {};
+                        totalTasksCount = state.habits.length;
+                        state.habits.forEach(h => { if (dayRec[h.id]) completedTasksColors.push(h.color || '#10b981'); });
+                    }
+
+                    let completedCount = completedTasksColors.length;
+                    const pct = totalTasksCount > 0 ? Math.round((completedCount / totalTasksCount) * 100) : 0;
+                    const isToday = i === 0;
+
+                    let segmentsHTML = '';
+                    if(completedCount > 0) {
+                        completedTasksColors.forEach(color => { segmentsHTML += `<div class="w-full flex-1" style="background-color: ${color}"></div>`; });
+                    } else { segmentsHTML = `<div class="w-full h-full bg-transparent"></div>`; }
+
+                    weeklyBarsContainer.innerHTML += `
+                        <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end group relative cursor-pointer" title="Click to view schedule for ${dateStr}" onclick="window.openDayInspector('${dateStr}')">
+                            <div class="text-[10px] text-slate-400 font-extrabold group-hover:text-emerald-400 transition">${pct}%</div>
+                            <div class="w-full bg-slate-950 rounded-t-2xl h-28 flex flex-col justify-end p-[2px] border border-slate-800 group-hover:border-emerald-500/50 transition">
+                                <div class="w-full rounded-xl overflow-hidden flex flex-col-reverse transition-all duration-500 gap-[1px]" style="height: ${Math.max(4, pct)}%">
+                                    ${segmentsHTML}
+                                </div>
+                            </div>
+                            <span class="text-xs ${isToday ? 'text-emerald-400 font-extrabold underline' : 'text-slate-400 font-medium'}">${dayName}</span>
+                        </div>
+                    `;
+                }
+            }
+
+            const monthlyHeatmapContainer = document.getElementById('monthlyHeatmapContainer');
+            if (monthlyHeatmapContainer) {
+                monthlyHeatmapContainer.innerHTML = '';
+                for (let i = 29; i >= 0; i--) {
+                    const d = window.getAdjustedDate(-i);
+                    const dateNum = d.getDate();
+                    const dateStr = window.getDateString(d);
+                    let completed = 0; let total = 0;
+
+                    if (state.taskArchives && state.taskArchives[dateStr] && state.taskArchives[dateStr].length > 0) {
+                        const arch = state.taskArchives[dateStr];
+                        total = arch.length;
+                        completed = arch.filter(x => x.completed).length;
+                    } else {
+                        const dayRec = state.history[dateStr] || {};
+                        total = state.habits.length;
+                        state.habits.forEach(h => { if (dayRec[h.id]) completed++; });
+                    }
+
+                    const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+                    let cellBg = '';
+                    if (pct === 100) cellBg = 'bg-gradient-to-br from-emerald-500 to-teal-500 border-emerald-400 text-slate-950 shadow-[0_0_10px_rgba(16,185,129,0.3)] font-black';
+                    else if (pct >= 50) cellBg = 'bg-emerald-600/70 border-emerald-500 text-emerald-50 font-bold';
+                    else if (pct > 0) cellBg = 'bg-emerald-900/40 border-emerald-800/60 text-emerald-300 font-semibold';
+                    else cellBg = 'bg-slate-900/40 border-slate-800/60 text-slate-500';
+
+                    monthlyHeatmapContainer.innerHTML += `
+                        <div class="date-num aspect-square rounded-xl border ${cellBg} flex flex-col items-center justify-center text-xs transition-all relative overflow-hidden cursor-pointer hover:scale-105 active:scale-95" 
+                             title="Click to inspect ${dateStr} (${completed}/${total} completed)" onclick="window.openDayInspector('${dateStr}')">
+                            <span>${dateNum}</span>
+                            ${pct === 0 && i !== 0 ? `<div class="absolute bottom-1 w-1.5 h-1.5 rounded-full bg-slate-800"></div>` : ''}
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        function renderBadges() {
+            const badgesContainer = document.getElementById('badgesContainer');
+            if (!badgesContainer) return;
+            badgesContainer.innerHTML = '';
+            let unlockedCount = 0;
+            BADGES.forEach(badge => {
+                let unlocked = false; let progressVal = 0;
+                if (badge.reqType === 'xp') { unlocked = state.xp >= badge.reqVal; progressVal = Math.min(100, Math.round((state.xp / badge.reqVal) * 100)); } 
+                else if (badge.reqType === 'streak') { unlocked = state.streak >= badge.reqVal; progressVal = Math.min(100, Math.round((state.streak / badge.reqVal) * 100)); } 
+                else if (badge.reqType === 'habits') { unlocked = state.habits.length >= badge.reqVal; progressVal = Math.min(100, Math.round((state.habits.length / badge.reqVal) * 100)); }
+                if (unlocked) unlockedCount++;
+                if (currentBadgeFilter !== 'all' && badge.category !== currentBadgeFilter) return;
+
+                badgesContainer.innerHTML += `
+                    <div class="p-3.5 rounded-[1.5rem] border flex flex-col justify-between ${unlocked ? 'badge-unlocked' : 'badge-locked'}">
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div class="w-9 h-9 rounded-2xl flex items-center justify-center ${unlocked ? 'bg-amber-500 text-slate-950 shadow-md' : 'bg-slate-800 text-slate-500'}">
+                                <i class="fa-solid ${badge.icon} text-sm"></i>
+                            </div>
+                            <span class="text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase ${unlocked ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-slate-800 text-slate-500'}">
+                                ${unlocked ? 'Unlocked' : 'Locked'}
+                            </span>
+                        </div>
+                        <div>
+                            <div class="text-xs font-extrabold ${unlocked ? 'text-amber-300' : 'text-slate-300'}">${badge.name}</div>
+                            <div class="text-[10px] text-slate-400 mt-0.5">${badge.desc}</div>
+                        </div>
+                        <div class="mt-2.5 pt-2 border-t border-slate-800/60">
+                            <div class="flex justify-between items-center text-[9px] text-slate-400 mb-1">
+                                <span>Progress</span><span>${progressVal}%</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+                                <div class="${unlocked ? 'bg-amber-400' : 'bg-emerald-500/60'} h-1.5" style="width: ${progressVal}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            if (document.getElementById('badgeCountText')) document.getElementById('badgeCountText').innerText = `${unlockedCount}/${BADGES.length}`;
+        }
+
+        function renderWaterTracker() {
+            const today = getAdjustedTodayDateString();
+            const glassesDrank = state.waterLogs[today] || 0;
+            const target = state.settings.waterTarget || 8;
+            const pct = Math.min(100, Math.round((glassesDrank / target) * 100));
+            
+            if (document.getElementById('waterGlassesCountText')) document.getElementById('waterGlassesCountText').innerText = `${glassesDrank}/${target}`;
+            if (document.getElementById('waterVolumeText')) document.getElementById('waterVolumeText').innerText = `${(glassesDrank * 0.25).toFixed(2)} L`;
+            if (document.getElementById('waterPercentText')) document.getElementById('waterPercentText').innerText = `${pct}%`;
+            if (document.getElementById('waterProgressBar')) document.getElementById('waterProgressBar').style.width = `${pct}%`;
+
+            const gridEl = document.getElementById('waterGlassesGrid');
+            if (gridEl) {
+                gridEl.innerHTML = '';
+                for (let i = 0; i < target; i++) {
+                    const isFilled = i < glassesDrank;
+                    gridEl.innerHTML += `
+                        <button type="button" onclick="window.toggleWaterGlass(${i})" class="water-glass-item flex flex-col items-center p-2 rounded-2xl border transition cursor-pointer select-none ${isFilled ? 'bg-cyan-500/20 border-cyan-400/60 text-cyan-300 shadow-md shadow-cyan-500/20' : 'bg-slate-950/70 border-slate-800 text-slate-500'}">
+                            <i class="fa-solid fa-glass-water text-sm ${isFilled ? 'text-cyan-400 animate-bounce' : 'text-slate-600'}"></i>
+                            <span class="text-[9px] font-mono mt-1 font-bold">${i + 1}</span>
+                        </button>
+                    `;
+                }
+            }
+        }
+
+        function renderVipAddons() {
+            const today = getAdjustedTodayDateString();
+            let done = 0; let total = 0;
+
+            if (state.taskArchives && state.taskArchives[today] && state.taskArchives[today].length > 0) {
+                const arch = state.taskArchives[today];
+                total = arch.length; done = arch.filter(item => item.completed).length;
+            } else {
+                const record = state.history[today] || {};
+                total = state.habits.length; done = state.habits.filter(h => !!record[h.id]).length;
+            }
+
+            const water = state.waterLogs[today] || 0;
+            const waterTarget = state.settings.waterTarget || 8;
+            const focusMins = state.focusLogs ? (state.focusLogs[today] || 0) : 0;
+            const taskPct = total > 0 ? Math.round((done / total) * 100) : 0;
+            const focusScore = Math.min(100, Math.round(taskPct * 0.65 + Math.min(100, (focusMins / 60) * 100) * 0.35));
+
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+            set('glanceTasks', `${done}/${total}`); set('glanceFocus', `${focusMins}m`); set('glanceStreak', `${state.streak}d`);
+            set('glanceWater', `${water}/${waterTarget}`); set('focusScoreBadge', `Focus ${focusScore}%`); set('glanceXP', `${state.xp} XP`);
+            if (document.getElementById('glanceXPBar')) document.getElementById('glanceXPBar').style.width = `${Math.min(100, (state.xp % 50) / 50 * 100)}%`;
+
+            const mTaskTarget = state.settings.missionTaskCount || 3;
+            const mFocusTarget = state.settings.missionFocusMinutes || 60;
+            const missions = [
+                ['fa-check-circle', `Complete ${mTaskTarget} target habits`, done >= mTaskTarget],
+                ['fa-stopwatch', `Focus deeply for ${mFocusTarget} mins`, focusMins >= mFocusTarget],
+                ['fa-droplet', `Achieve hydration goal (${waterTarget})`, water >= waterTarget && waterTarget > 0]
+            ];
+            
+            if (document.getElementById('dailyMissionList')) {
+                document.getElementById('dailyMissionList').innerHTML = missions.map(m => `
+                    <div class="flex items-center gap-2 ${m[2] ? 'text-emerald-400' : 'text-slate-400'}">
+                        <i class="fa-solid ${m[0]} w-4 text-center"></i><span class="flex-1">${m[1]}</span>
+                        <span class="text-[9px] font-black">${m[2] ? 'DONE' : 'NEXT'}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function getHabitVisualData(habit) {
+            const c = habit.color || '#8b5cf6'; 
+            return { colors: { a: c, css: `linear-gradient(135deg, ${c}, color-mix(in srgb, ${c} 30%, black))` } };
+        }
+
+        function renderHabitWeek(habit, colors) {
+            let html = '<div class="habit-week">';
+            const daysArr = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+            for (let i = 6; i >= 0; i--) {
+                const d = window.getAdjustedDate(-i);
+                const isDone = !!(state.history[window.getDateString(d)] || {})[habit.id];
+                html += `<div class="habit-week-day ${isDone ? 'done' : ''} ${i === 0 ? 'today' : ''}" style="${isDone ? `background: ${colors.css}; border-color: transparent; color: #08111f;` : ''}">${daysArr[d.getDay()]}</div>`;
+            }
+            let personalStreak = 0; const todayStr = getAdjustedTodayDateString();
+            for(let i = 0; i < 30; i++) {
+                const dStr = window.getDateString(window.getAdjustedDate(-i));
+                if(state.history[dStr] && state.history[dStr][habit.id]) personalStreak++;
+                else if(i !== 0 || (i===0 && !state.history[todayStr]?.[habit.id])) { if(i !== 0) break; }
+            }
+            html += `<div class="habit-streak-pill ${personalStreak > 0 ? 'active' : ''}"><i class="fa-solid fa-fire ${personalStreak > 0 ? 'text-orange-400' : 'text-slate-600'} text-[8px]"></i> ${personalStreak}</div></div>`;
+            return html;
+        }
+
+        window.showVipReward = function(title, text){
+            var toast = document.getElementById('vipRewardToast'); if(!toast) return;
+            var t = document.getElementById('vipRewardTitle'), x = document.getElementById('vipRewardText');
+            if(t) t.textContent = title || 'Reward Unlocked';
+            if(x) x.textContent = text || '+10 XP';
+            toast.classList.remove('hidden');
+            clearTimeout(window.__vipToastTimer); window.__vipToastTimer = setTimeout(function(){ toast.classList.add('hidden'); }, 2200);
+        };
+
+        function render() {
+            const today = getAdjustedTodayDateString();
+            const todayRecord = state.history[today] || {};
+            const todayTimestamps = state.timestamps[today] || {};
+
+            if (document.getElementById('userLevel')) document.getElementById('userLevel').innerText = String(state.level);
+            if (document.getElementById('userXP')) document.getElementById('userXP').innerText = `${state.xp} XP`;
+            if (document.getElementById('currentStreak')) document.getElementById('currentStreak').innerText = `${state.streak} Days`;
+            
+            const journalInput = document.getElementById('journalInput');
+            if(journalInput && document.activeElement !== journalInput) {
+                journalInput.value = state.journal?.[today] || '';
+            }
+
+            const analytics = calculateAnalytics();
+            updatePerformanceRings(analytics.todayPct, analytics.weeklyPct, analytics.monthlyPct);
+            renderWaterTracker();
+            renderVipAddons(); 
+
+            if (document.getElementById('taskCountText')) {
+                let totalToday = state.habits.length;
+                if(state.taskArchives && state.taskArchives[today]) totalToday = state.taskArchives[today].length;
+                document.getElementById('taskCountText').innerText = `${analytics.todayCompleted}/${totalToday} Completed`;
+            }
+
+            const habitListEl = document.getElementById('habitList');
+            if (habitListEl) {
+                habitListEl.innerHTML = '';
+                if (state.habits.length === 0) {
+                    habitListEl.innerHTML = `
+                        <div class="text-center py-8 glass-card rounded-[2rem] border-dashed border-slate-800">
+                            <i class="fa-solid fa-rocket text-2xl text-slate-600 mb-2"></i>
+                            <p class="text-xs font-semibold text-slate-400 mt-2">All systems ready. Add your first dynamic class or habit!</p>
+                        </div>
+                    `;
+                } else {
+                    state.habits.forEach(habit => {
+                        const isDone = !!todayRecord[habit.id];
+                        const timestamp = todayTimestamps[habit.id] || '';
+                        const visual = getHabitVisualData(habit);
+                        
+                        habitListEl.innerHTML += `
+                            <div id="habit-card-${habit.id}" class="glass-card habit-card-premium p-4 rounded-[2rem] flex items-center justify-between border transition shadow-lg ${isDone ? 'habit-completed border-emerald-500/40 bg-emerald-950/20' : 'border-slate-800'}" style="--habit-color: ${visual.colors.a}; --habit-gradient: ${visual.colors.css}">
+                                <div class="flex items-center gap-3.5 cursor-pointer select-none flex-1 min-w-0" onclick="window.toggleHabit('${habit.id}')">
+                                    <div class="habit-color-indicator" aria-hidden="true"></div>
+                                    <div class="w-7 h-7 rounded-xl border flex items-center justify-center transition-colors duration-200 ${isDone ? 'bg-emerald-500 border-emerald-400 shadow-md shadow-emerald-500/40 animate-checkPop' : 'border-slate-600 hover:border-emerald-400 bg-slate-950'}">
+                                        <svg id="tick-icon-${habit.id}" class="w-3.5 h-3.5 ${isDone ? 'opacity-100 text-slate-950' : 'opacity-0'} transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7"></path></svg>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="flex items-center flex-wrap gap-1">
+                                            <span class="text-xs sm:text-sm font-semibold ${isDone ? 'line-through text-slate-500' : 'text-slate-200'}">${habit.name}</span>
+                                            <span class="text-[8px] uppercase tracking-wider bg-slate-800/80 ${habit.type === 'daily' ? 'text-cyan-300' : 'text-amber-300'} px-2 py-0.5 rounded-full border border-slate-700 ml-2">${habit.type === 'daily' ? 'Daily' : 'Today\'s Class'}</span>
+                                        </div>
+                                        ${isDone && timestamp ? `<div class="text-[9px] text-emerald-400 font-mono mt-0.5"><i class="fa-regular fa-clock"></i> Completed at ${timestamp}</div>` : ''}
+                                        ${renderHabitWeek(habit, visual.colors)} 
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-[9px] px-2.5 py-1 rounded-xl font-bold ${isDone ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-950 text-slate-500 border border-slate-800'}">${isDone ? '+10 XP' : 'Pending'}</span>
+                                    <button type="button" onclick="window.deleteHabit('${habit.id}')" class="text-slate-500 hover:text-rose-400 text-xs p-1.5 transition rounded-xl hover:bg-rose-500/10 active:scale-95" title="Remove target"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            }
+
+            renderBadges();
+            renderAnalyticsGraphs();
+            updateDeadlineTracker();
+        }
+
+        // BUG FIX: Replacing window.onload inside module with direct initialization
+        // to prevent missed load events when deploying.
+        function initializeAppUI() {
+            if(localStorage.getItem('habitTheme') === 'light') {
+                document.documentElement.classList.remove('dark');
+                const icon = document.getElementById('themeIcon');
+                if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+            }
+            
+            // PWA Manifest setup
+            const manifest = {
+                name: "HabitTracker Pro", short_name: "HabitPro", start_url: window.location.href, display: "standalone",
+                background_color: "#030712", theme_color: "#10b981",
+                icons: [{ src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzAzMDcxMiIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQwIiBmaWxsPSIjMTBiOTgxIi8+PC9zdmc+", sizes: "192x192", type: "image/svg+xml" }]
+            };
+            const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestUrl}">`);
+            document.head.insertAdjacentHTML('beforeend', `<meta name="theme-color" content="#10b981">`);
+            document.head.insertAdjacentHTML('beforeend', `<meta name="apple-mobile-web-app-capable" content="yes">`);
+
+            initFirebase();
+            updateLiveClock();
+
+            // Attaching Event listeners safely!
+            const form = document.getElementById('addHabitForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault(); // This works perfectly now
+                    const input = document.getElementById('habitInput');
+                    const select = document.getElementById('habitTypeSelect');
+                    if (input && input.value.trim()) {
+                        window.addHabit(input.value.trim(), select ? select.value : 'today');
+                        input.value = '';
+                    }
+                });
+            }
+
+            const settingsForm = document.getElementById('settingsForm');
+            if (settingsForm) settingsForm.addEventListener('submit', saveSettings);
+            
+            const timerForm = document.getElementById('timerSettingsForm');
+            if (timerForm) timerForm.addEventListener('submit', saveTimerSettings);
+            
+            const timerVolume = document.getElementById('timerVolumeInput');
+            if (timerVolume) {
+                timerVolume.addEventListener('input', function() {
+                    if (document.getElementById('timerVolumeValue')) document.getElementById('timerVolumeValue').textContent = `${this.value}%`;
+                });
+            }
+
+            const timerCfg = getTimerSettings();
+            timerTotal = Math.max(60, Number(timerCfg.focusMinutes) * 60);
+            timerRemaining = timerTotal;
+            renderTimer();
+
+            setInterval(updateLiveClock, 1000);
+            setInterval(updateDeadlineTracker, 60000);
+        }
+
+        // Execute immediately when DOM is completely built
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeAppUI);
+        } else {
+            initializeAppUI();
+        }
+
+    </script>
+</body>
+</html>
