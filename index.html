@@ -160,6 +160,30 @@
 </head>
 <body class="min-h-screen pb-16 selection:bg-emerald-500 selection:text-slate-950">
 
+    <!-- Testing Mode Popup -->
+    <div id="testingModeModal" class="fixed inset-0 z-[100005] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden">
+        <div class="glass max-w-md w-full p-6 rounded-[2.5rem] border-blue-500/30 text-center space-y-5 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 animate-modalPop">
+            <div class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto text-slate-950 text-2xl shadow-lg shadow-blue-500/30 animate-pulse">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-extrabold text-slate-100">Testing Mode Alert</h3>
+                <p class="text-sm text-slate-300 leading-relaxed font-medium">
+                    Ye testing mode <span class="text-white font-bold">30 Sept tak</span> over ho jayega. Iske premium version ke liye mujhe contact kare.<br><br>
+                    <span class="text-blue-400 font-bold">Premium version mai Winter Arc session bhi hai and new new chij hai!</span>
+                </p>
+            </div>
+            <div class="pt-3 flex flex-row items-center gap-3">
+                <button type="button" onclick="document.getElementById('testingModeModal').classList.add('hidden'); document.body.style.overflow='auto';" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3.5 px-4 rounded-2xl transition active:scale-95 shadow-md border border-slate-700">
+                    OK
+                </button>
+                <a href="https://t.me/Unknowndude2050" target="_blank" class="flex-1 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-400 hover:to-cyan-300 text-slate-950 font-extrabold py-3.5 px-4 rounded-2xl shadow-lg shadow-blue-500/20 transition transform active:scale-95 flex items-center justify-center gap-2 decoration-none">
+                    <i class="fa-brands fa-telegram text-lg"></i> Contact Me
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Welcome Modal -->
     <div id="welcomeModal" class="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden">
         <div class="glass max-w-md w-full p-6 rounded-[2.5rem] border-emerald-500/30 text-center space-y-5 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 animate-modalPop">
@@ -396,16 +420,16 @@
                     </div>
                 </div>
                 
-                <!-- Action Buttons: Leaderboard, Analytics, Theme, Settings, Profile -->
+                <!-- Action Buttons -->
                 <button type="button" onclick="window.openLeaderboard()" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-amber-400 hover:text-amber-300 transition flex items-center justify-center shadow-md active:scale-95" title="Global Leaderboard">
                     <i class="fa-solid fa-ranking-star text-xs"></i>
                 </button>
                 
-                <!-- NEW: Analytics Creator Button -->
                 <button type="button" onclick="window.showVipReward('Analytics Live', 'Open your Analytics File to view live visitor stats!')" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-purple-400 hover:text-purple-300 transition flex items-center justify-center shadow-md active:scale-95" title="Creator Analytics">
                     <i class="fa-solid fa-chart-line text-xs"></i>
                 </button>
 
+                <!-- Responsive Theme Icons support mobile & desktop layout properly now -->
                 <button type="button" onclick="window.toggleTheme()" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-yellow-400 transition flex items-center justify-center shadow-md active:scale-95" title="Toggle Light/Dark Mode">
                     <i class="fa-solid fa-moon text-xs" id="themeIcon"></i>
                 </button>
@@ -1144,17 +1168,18 @@
             if(modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
         };
 
+        // THEME TOGGLE UPDATED TO ALWAYS KEEP ICONS SYNCED
         window.toggleTheme = function() {
             const htmlEl = document.documentElement;
-            const icon = document.getElementById('themeIcon');
+            const icons = [document.getElementById('themeIcon'), document.getElementById('themeIconMobile')];
             if (htmlEl.classList.contains('dark')) {
                 htmlEl.classList.remove('dark');
                 localStorage.setItem('habitTheme', 'light');
-                if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+                icons.forEach(i => { if(i) { i.classList.remove('fa-moon'); i.classList.add('fa-sun'); }});
             } else {
                 htmlEl.classList.add('dark');
                 localStorage.setItem('habitTheme', 'dark');
-                if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
+                icons.forEach(i => { if(i) { i.classList.remove('fa-sun'); i.classList.add('fa-moon'); }});
             }
         };
 
@@ -2137,13 +2162,18 @@
             updateDeadlineTracker();
         }
 
-        // BUG FIX: Replacing window.onload inside module with direct initialization
-        // to prevent missed load events when deploying.
         function initializeAppUI() {
-            if(localStorage.getItem('habitTheme') === 'light') {
+            const savedTheme = localStorage.getItem('habitTheme');
+            const icon = document.getElementById('themeIcon');
+            
+            // Ab explicitly Dark Theme ko hi default force karega
+            if(savedTheme === 'light') {
                 document.documentElement.classList.remove('dark');
-                const icon = document.getElementById('themeIcon');
                 if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('habitTheme', 'dark'); // Save dark state safely
+                if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
             }
             
             // PWA Manifest setup
@@ -2165,7 +2195,7 @@
             const form = document.getElementById('addHabitForm');
             if (form) {
                 form.addEventListener('submit', function(e) {
-                    e.preventDefault(); // This works perfectly now
+                    e.preventDefault(); 
                     const input = document.getElementById('habitInput');
                     const select = document.getElementById('habitTypeSelect');
                     if (input && input.value.trim()) {
@@ -2195,6 +2225,15 @@
 
             setInterval(updateLiveClock, 1000);
             setInterval(updateDeadlineTracker, 60000);
+
+            // Testing Mode Modal trigger
+            setTimeout(() => {
+                const testModal = document.getElementById('testingModeModal');
+                if (testModal) {
+                    testModal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            }, 500);
         }
 
         // Execute immediately when DOM is completely built
