@@ -4,19 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HabitTracker Pro - Ultimate VIP Dynamic Edition</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons for UI -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
-    <!-- Firebase SDKs for Cloud Data Sync & Authentication -->
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
-    
-    <!-- Premium Tech Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -82,7 +75,6 @@
             box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.6);
         }
         
-        /* Advanced LIGHT MODE Global CSS Overrides */
         html:not(.dark) body { background-color: #f8fafc; color: #0f172a; }
         html:not(.dark) .glass { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.1); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1); }
         html:not(.dark) .glass-card { background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%); border-color: rgba(0,0,0,0.1); }
@@ -161,21 +153,20 @@
 <body class="min-h-screen pb-16 selection:bg-emerald-500 selection:text-slate-950">
 
     <!-- Testing Mode Popup -->
-    <div id="testingModeModal" class="fixed inset-0 z-[100005] flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden">
+    <div id="testingModeModal" class="fixed inset-0 z-[100005] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md hidden">
         <div class="glass max-w-md w-full p-6 rounded-[2.5rem] border-blue-500/30 text-center space-y-5 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 animate-modalPop">
             <div class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto text-slate-950 text-2xl shadow-lg shadow-blue-500/30 animate-pulse">
-                <i class="fa-solid fa-clock"></i>
+                <i class="fa-solid fa-lock"></i>
             </div>
             <div class="space-y-2">
-                <h3 class="text-xl font-extrabold text-slate-100">Testing Mode Alert</h3>
+                <h3 class="text-xl font-extrabold text-slate-100">Test Mode is OFF</h3>
                 <p class="text-sm text-slate-300 leading-relaxed font-medium">
-                    This test mode has ended. For access, contact me on Telegram:<br><br>
-                    <span class="text-blue-400 font-bold">Premium version includes Winter Arc session and many new features!</span>
+                    For access, contact admin on Telegram.
                 </p>
             </div>
             <div class="pt-3">
                 <a href="https://t.me/Habitfeedback" target="_blank" class="w-full bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-400 hover:to-cyan-300 text-slate-950 font-extrabold py-3.5 px-4 rounded-2xl shadow-lg shadow-blue-500/20 transition transform active:scale-95 flex items-center justify-center gap-2 decoration-none">
-                    <i class="fa-brands fa-telegram text-lg"></i> Contact Me on Telegram
+                    <i class="fa-brands fa-telegram text-lg"></i> Join / Contact on Telegram
                 </a>
             </div>
         </div>
@@ -226,7 +217,6 @@
             </div>
             
             <div id="leaderboardList" class="space-y-2 max-h-72 overflow-y-auto pr-2">
-                <!-- Leaderboard dynamically rendered here -->
             </div>
             
             <div class="pt-2 border-t border-slate-800/80 text-center">
@@ -359,7 +349,6 @@
                     <i class="fa-solid fa-list text-emerald-400 text-[10px]"></i> Logged Tasks on this day:
                 </h4>
                 <div id="inspectorTasksList" class="space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
-                    <!-- Tasks injected here -->
                 </div>
             </div>
 
@@ -417,7 +406,6 @@
                     </div>
                 </div>
                 
-                <!-- Action Buttons -->
                 <button type="button" onclick="window.openLeaderboard()" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-amber-400 hover:text-amber-300 transition flex items-center justify-center shadow-md active:scale-95" title="Global Leaderboard">
                     <i class="fa-solid fa-ranking-star text-xs"></i>
                 </button>
@@ -426,7 +414,6 @@
                     <i class="fa-solid fa-chart-line text-xs"></i>
                 </button>
 
-                <!-- Responsive Theme Icons support mobile & desktop layout properly now -->
                 <button type="button" onclick="window.toggleTheme()" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-yellow-400 transition flex items-center justify-center shadow-md active:scale-95" title="Toggle Light/Dark Mode">
                     <i class="fa-solid fa-moon text-xs" id="themeIcon"></i>
                 </button>
@@ -443,7 +430,6 @@
 
     <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
 
-        <!-- Motivation Quote Banner -->
         <div class="glass-card p-4 sm:p-5 rounded-[2.5rem] relative overflow-hidden border-emerald-500/25 animate-float shadow-xl">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
                 <div class="space-y-1 text-center sm:text-left">
@@ -458,7 +444,6 @@
             </div>
         </div>
 
-        <!-- VIP Focus Timer -->
         <section id="timerPanel" class="glass-card timer-panel p-5 rounded-[2.5rem] border-emerald-500/20 shadow-xl animate-float">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-5">
                 <div class="flex items-center gap-3 min-w-0">
@@ -513,9 +498,7 @@
             </div>
         </section>
 
-        <!-- VIP Add-ons: Today at a Glance + Daily Mission -->
         <section id="vipAddons" class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-3 animate-fadeIn">
-            <!-- Productivity Snapshot -->
             <div class="glass-card p-3 sm:p-4 rounded-[1.25rem] border-emerald-500/20 shadow-xl flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-2.5">
                     <div class="flex items-center gap-2">
@@ -554,7 +537,6 @@
                 </div>
             </div>
 
-            <!-- Customized Mission Section -->
             <div class="glass-card p-3 sm:p-4 rounded-[1.25rem] border-amber-500/20 shadow-xl flex flex-col">
                 <div class="flex items-center justify-between mb-2.5">
                     <div class="flex items-center gap-1.5">
@@ -569,10 +551,8 @@
             </div>
         </section>
 
-        <!-- Top Overview Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
-            <!-- Target Countdown Card -->
             <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-amber-500/20 relative overflow-hidden glass-hover animate-float shadow-xl" style="animation-delay: 0.5s;">
                 <div class="absolute -right-3 -bottom-3 text-amber-500/5 text-8xl font-black pointer-events-none uppercase" id="goalWatermark">NEET</div>
                 <div>
@@ -599,7 +579,6 @@
                 </div>
             </div>
 
-            <!-- Interactive Glass Hydration Tracker Card -->
             <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-cyan-500/25 relative overflow-hidden glass-hover animate-float shadow-xl" style="animation-delay: 1s;">
                 <div class="absolute top-2 right-3 text-cyan-500/10 text-7xl font-black pointer-events-none">
                     <i class="fa-solid fa-droplet"></i>
@@ -614,7 +593,6 @@
                     <p class="text-[11px] text-slate-400 mb-3">Tap individual glass icons below to fill them:</p>
                     
                     <div id="waterGlassesGrid" class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-28 overflow-y-auto p-1 pr-2">
-                        <!-- Rendered via JS -->
                     </div>
                 </div>
 
@@ -629,7 +607,6 @@
                 </div>
             </div>
 
-            <!-- Overall Performance Card with 360-Degree Rotating Multi-Color Rings -->
             <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-teal-500/20 bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-teal-950/30 glass-hover animate-float shadow-xl" style="animation-delay: 1.5s;">
                 <div class="flex items-center justify-between mb-1">
                     <span class="text-xs font-extrabold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
@@ -639,7 +616,6 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 py-3 my-auto">
-                    <!-- Daily Ring -->
                     <div class="flex flex-col items-center">
                         <div class="relative w-14 h-14 flex items-center justify-center rotate-360">
                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -651,7 +627,6 @@
                         <span class="text-[11px] font-bold text-slate-300 mt-2">Daily</span>
                     </div>
 
-                    <!-- Weekly Ring -->
                     <div class="flex flex-col items-center">
                         <div class="relative w-14 h-14 flex items-center justify-center rotate-360" style="animation-direction: reverse; animation-duration: 22s;">
                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -663,7 +638,6 @@
                         <span class="text-[11px] font-bold text-slate-300 mt-2">Weekly</span>
                     </div>
 
-                    <!-- Monthly Ring -->
                     <div class="flex flex-col items-center">
                         <div class="relative w-14 h-14 flex items-center justify-center rotate-360" style="animation-duration: 25s;">
                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -679,7 +653,6 @@
 
         </div>
 
-        <!-- GRAPH & ANALYTICS SECTION (WITH CLICK-TO-INSPECT) -->
         <div class="glass-card p-6 rounded-[2.5rem] space-y-6 border-slate-800 shadow-xl">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
                 <div>
@@ -698,25 +671,19 @@
                 </div>
             </div>
 
-            <!-- View 1: 7-Day Visual Bar Graph with Colors -->
             <div id="weeklyGraphView" class="space-y-4">
                 <div class="flex items-end justify-between gap-2 sm:gap-4 h-48 pt-6 px-2 sm:px-6 bg-slate-950/60 rounded-3xl border border-slate-800/80" id="weeklyBarsContainer">
-                    <!-- Dynamic Bars rendered here -->
                 </div>
             </div>
 
-            <!-- View 2: Monthly Consistency Heatmap (Clickable with dates) -->
             <div id="heatmapGraphView" class="hidden space-y-4">
                 <div class="grid grid-cols-7 sm:grid-cols-10 gap-2 p-4 bg-slate-950/60 rounded-3xl border border-slate-800/80" id="monthlyHeatmapContainer">
-                    <!-- Dynamic Grid Blocks rendered here with real dates and click events -->
                 </div>
             </div>
         </div>
 
-        <!-- MAIN DYNAMIC SCHEDULE & ACHIEVEMENTS SECTION -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- Left 7 Cols: Dynamic Tasks -->
             <div class="lg:col-span-7 space-y-4">
                 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 p-5 rounded-[2.5rem] border border-slate-800 shadow-xl">
@@ -729,7 +696,6 @@
                     <span class="text-xs font-bold text-slate-300 bg-slate-950 px-4 py-1.5 rounded-full border border-slate-800" id="taskCountText">0/0 Completed</span>
                 </div>
 
-                <!-- ADD TASK FORM WITH RECURRING / TODAY TOGGLE -->
                 <form id="addHabitForm" class="glass-card p-3 rounded-[2rem] flex flex-col gap-2.5 border border-emerald-500/30 shadow-lg relative overflow-hidden group">
                     <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     
@@ -756,13 +722,10 @@
                     </div>
                 </form>
 
-                <!-- Habit List Container -->
                 <div id="habitList" class="space-y-3 mt-2">
-                    <!-- Rendered dynamically -->
                 </div>
             </div>
 
-            <!-- Right 5 Cols: ACHIEVEMENTS, BADGES, AND JOURNAL -->
             <div class="lg:col-span-5 space-y-4">
                 <div class="glass-card p-6 rounded-[2.5rem] space-y-4 border-amber-500/20 shadow-xl">
                     <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
@@ -772,7 +735,6 @@
                         <span class="text-xs bg-amber-500/10 text-amber-400 px-3 py-0.5 rounded-full border border-amber-500/20 font-mono font-bold" id="badgeCountText">0/8</span>
                     </div>
 
-                    <!-- Badge Category Filters -->
                     <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold text-slate-400">
                         <button type="button" onclick="window.filterBadges('all')" id="filterAll" class="px-3.5 py-1.5 rounded-2xl bg-emerald-500 text-slate-950 whitespace-nowrap shadow active:scale-95 transition">All</button>
                         <button type="button" onclick="window.filterBadges('streak')" id="filterStreak" class="px-3.5 py-1.5 rounded-2xl bg-slate-950 hover:text-slate-200 border border-slate-800 whitespace-nowrap active:scale-95 transition">Streaks 🔥</button>
@@ -780,13 +742,10 @@
                         <button type="button" onclick="window.filterBadges('special')" id="filterSpecial" class="px-3.5 py-1.5 rounded-2xl bg-slate-950 hover:text-slate-200 border border-slate-800 whitespace-nowrap active:scale-95 transition">Special 💎</button>
                     </div>
 
-                    <!-- Badges Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="badgesContainer">
-                        <!-- Badges rendered via JS -->
                     </div>
                 </div>
                 
-                <!-- Daily Reflection Journal -->
                 <div class="glass-card p-6 rounded-[2.5rem] space-y-3 border-indigo-500/20 shadow-xl mt-4">
                     <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
                         <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-100 flex items-center gap-2">
@@ -805,7 +764,6 @@
 
     </main>
 
-    <!-- VIP Reward Toast -->
     <div id="vipRewardToast" class="fixed left-1/2 -translate-x-1/2 bottom-5 z-[100000] hidden">
         <div class="glass-card px-5 py-3 rounded-2xl border-emerald-400/40 shadow-2xl flex items-center gap-3 animate-modalPop">
             <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
@@ -823,7 +781,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Adjusted Date Calculation helper
         window.getAdjustedDate = function(offsetDays = 0) {
             const now = new Date();
             const resetHour = window._appState?.settings?.resetHour ?? 4; 
@@ -919,7 +876,6 @@
             merged.settings = { ...defaultObj.settings, ...(savedObj.settings || {}) };
             merged.settings.timer = { ...defaultObj.settings.timer, ...(savedObj.settings?.timer || {}) };
             
-            // Hardened checks against null array issues
             if (!merged.habits || !Array.isArray(merged.habits)) merged.habits = [];
             if (!merged.history) merged.history = {};
             if (!merged.journal) merged.journal = {};
@@ -958,21 +914,16 @@
                             userId = user.uid;
                             loadCloudData();
 
-                            // ==========================================
-                            // UNIQUE VISITOR TRACKING LOGIC (1 User = 1 Count)
-                            // ==========================================
                             try {
                                 const visitorRef = doc(db, 'artifacts', appId, 'public', 'data', 'unique_visitors', userId);
                                 setDoc(visitorRef, {
                                     name: user.displayName || state.settings.userName || 'Anonymous VIP',
                                     photo: user.photoURL || '',
                                     lastVisit: Date.now()
-                                }, { merge: true }); // merge: true double counting rokta hai!
+                                }, { merge: true });
                             } catch(err) {
                                 console.log("Visitor tracking initialized locally.");
                             }
-                            // ==========================================
-
                         }
                     });
                 } else {
@@ -1165,7 +1116,6 @@
             if(modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
         };
 
-        // THEME TOGGLE UPDATED TO ALWAYS KEEP ICONS SYNCED
         window.toggleTheme = function() {
             const htmlEl = document.documentElement;
             const icons = [document.getElementById('themeIcon'), document.getElementById('themeIconMobile')];
@@ -1658,9 +1608,9 @@
                 window.showVipReward('Task Completed!', '+10 XP');
                 
                 if (habit.type === 'today') {
-                    syncTodayArchive(); // Force save to archive so it doesn't lose progress metrics
+                    syncTodayArchive();
                     if (card) {
-                        card.style.pointerEvents = 'none'; // stop double clicks causing glitches
+                        card.style.pointerEvents = 'none';
                         setTimeout(() => {
                             card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
                             card.style.opacity = '0';
@@ -1672,7 +1622,7 @@
                                 saveState();
                             }, 500);
                         }, 400); 
-                        return; // exit early, skip synchronous save to let animation run
+                        return;
                     } else {
                         state.habits = state.habits.filter(h => h.id !== id);
                     }
@@ -2163,17 +2113,15 @@
             const savedTheme = localStorage.getItem('habitTheme');
             const icon = document.getElementById('themeIcon');
             
-            // Ab explicitly Dark Theme ko hi default force karega
             if(savedTheme === 'light') {
                 document.documentElement.classList.remove('dark');
                 if(icon) { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
             } else {
                 document.documentElement.classList.add('dark');
-                localStorage.setItem('habitTheme', 'dark'); // Save dark state safely
+                localStorage.setItem('habitTheme', 'dark');
                 if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
             }
             
-            // PWA Manifest setup
             const manifest = {
                 name: "HabitTracker Pro", short_name: "HabitPro", start_url: window.location.href, display: "standalone",
                 background_color: "#030712", theme_color: "#10b981",
@@ -2188,7 +2136,6 @@
             initFirebase();
             updateLiveClock();
 
-            // Attaching Event listeners safely!
             const form = document.getElementById('addHabitForm');
             if (form) {
                 form.addEventListener('submit', function(e) {
@@ -2223,7 +2170,6 @@
             setInterval(updateLiveClock, 1000);
             setInterval(updateDeadlineTracker, 60000);
 
-            // Testing Mode Modal trigger
             setTimeout(() => {
                 const testModal = document.getElementById('testingModeModal');
                 if (testModal) {
@@ -2233,7 +2179,6 @@
             }, 500);
         }
 
-        // Execute immediately when DOM is completely built
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeAppUI);
         } else {
