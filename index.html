@@ -4,12 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HabitTracker Pro - Ultimate VIP Dynamic Edition</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons for UI -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Firebase SDKs for Cloud Data Sync & Authentication -->
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js" type="module"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js" type="module"></script>
+    
+    <!-- Premium Tech Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -26,13 +33,15 @@
                         float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-5px)' } },
                         pulseGlow: { '0%, 100%': { opacity: 1 }, '50%': { opacity: 0.7 } },
                         modalPop: { '0%': { opacity: 0, transform: 'scale(0.95) translateY(10px)' }, '100%': { opacity: 1, transform: 'scale(1) translateY(0)' } },
-                        checkPop: { '0%': { transform: 'scale(0.8)' }, '50%': { transform: 'scale(1.2)' }, '100%': { transform: 'scale(1)' } }
+                        checkPop: { '0%': { transform: 'scale(0.8)' }, '50%': { transform: 'scale(1.2)' }, '100%': { transform: 'scale(1)' } },
+                        snowFloat: { '0%': { transform: 'translateY(0px) rotate(0deg)', opacity: 0.8 }, '100%': { transform: 'translateY(-12px) rotate(15deg)', opacity: 0.4 } }
                     },
                     animation: {
                         float: 'float 4s ease-in-out infinite',
                         pulseGlow: 'pulseGlow 2s ease-in-out infinite',
                         modalPop: 'modalPop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                        checkPop: 'checkPop 0.3s ease-in-out'
+                        checkPop: 'checkPop 0.3s ease-in-out',
+                        snowFloat: 'snowFloat 5s ease-in-out infinite'
                     }
                 }
             }
@@ -75,6 +84,7 @@
             box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.6);
         }
         
+        /* Advanced LIGHT MODE Global CSS Overrides */
         html:not(.dark) body { background-color: #f8fafc; color: #0f172a; }
         html:not(.dark) .glass { background: rgba(255, 255, 255, 0.95); border-color: rgba(0,0,0,0.1); box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1); }
         html:not(.dark) .glass-card { background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%); border-color: rgba(0,0,0,0.1); }
@@ -148,26 +158,136 @@
         .timer-preset { transition: all .2s ease; }
         .timer-preset:active { transform: translateY(1px); }
         .timer-sound-on { color: #34d399; }
+
+        /* ============ TRIAL SYSTEM STYLES ============ */
+        .trial-snow-bg {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .trial-snow-bg::before, .trial-snow-bg::after {
+            content: "❄";
+            position: absolute;
+            color: rgba(165, 180, 252, 0.15);
+            font-size: 60px;
+            animation: snowFloat 6s ease-in-out infinite;
+        }
+        .trial-snow-bg::before { top: 10%; left: 8%; animation-delay: 0s; }
+        .trial-snow-bg::after { bottom: 12%; right: 10%; animation-delay: 2s; font-size: 40px; }
+
+        .trial-glow-ring {
+            box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.25), 0 20px 60px -15px rgba(99, 102, 241, 0.35);
+        }
+
+        .trial-expired-overlay {
+            animation: modalPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .trial-cta-pulse {
+            animation: trialPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes trialPulse {
+            0%, 100% { box-shadow: 0 8px 30px -5px rgba(16, 185, 129, 0.35); }
+            50% { box-shadow: 0 8px 40px -3px rgba(16, 185, 129, 0.55); }
+        }
+        /* ============ END TRIAL STYLES ============ */
     </style>
 </head>
 <body class="min-h-screen pb-16 selection:bg-emerald-500 selection:text-slate-950">
 
-    <!-- Testing Mode Popup -->
-    <div id="testingModeModal" class="fixed inset-0 z-[100005] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md hidden">
-        <div class="glass max-w-md w-full p-6 rounded-[2.5rem] border-blue-500/30 text-center space-y-5 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 animate-modalPop">
-            <div class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto text-slate-950 text-2xl shadow-lg shadow-blue-500/30 animate-pulse">
-                <i class="fa-solid fa-lock"></i>
+    <!-- ============================================================
+         TRIAL: WELCOME MODAL (First-time trial users only)
+         ============================================================ -->
+    <div id="trialWelcomeModal" class="fixed inset-0 z-[100020] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md hidden">
+        <div class="glass max-w-md w-full p-6 rounded-[2.5rem] border-indigo-500/40 text-center space-y-5 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 animate-modalPop">
+            <div class="trial-snow-bg"></div>
+            <div class="absolute -top-12 -left-12 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-12 -right-12 w-32 h-32 bg-cyan-500/20 rounded-full blur-2xl"></div>
+
+            <div class="w-20 h-20 bg-gradient-to-tr from-indigo-500 via-purple-500 to-cyan-400 rounded-3xl flex items-center justify-center mx-auto text-slate-950 text-3xl shadow-lg shadow-indigo-500/40 animate-bounce relative z-10">
+                <i class="fa-solid fa-snowflake"></i>
             </div>
-            <div class="space-y-2">
-                <h3 class="text-xl font-extrabold text-slate-100">Test Mode is OFF</h3>
-                <p class="text-sm text-slate-300 leading-relaxed font-medium">
-                    For access, contact admin on Telegram.
+
+            <div class="space-y-2 relative z-10">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 uppercase tracking-widest">
+                    <i class="fa-solid fa-gift text-[9px]"></i> 7 Days Free
+                </span>
+                <h3 class="text-2xl font-extrabold text-slate-100">❄️ Welcome to Winter Arc</h3>
+                <p class="text-sm text-indigo-300 font-semibold">Your 7-Day Free Trial Has Started</p>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    No payment required. <span class="text-slate-200 font-semibold">7 days</span> to experience the system and see whether it actually helps you stay consistent.
                 </p>
             </div>
-            <div class="pt-3">
-                <a href="https://t.me/Habitfeedback" target="_blank" class="w-full bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-400 hover:to-cyan-300 text-slate-950 font-extrabold py-3.5 px-4 rounded-2xl shadow-lg shadow-blue-500/20 transition transform active:scale-95 flex items-center justify-center gap-2 decoration-none">
-                    <i class="fa-brands fa-telegram text-lg"></i> Join / Contact on Telegram
-                </a>
+
+            <div class="pt-2 relative z-10">
+                <button type="button" onclick="window.closeTrialWelcome()" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 hover:from-indigo-400 hover:to-cyan-300 text-slate-950 font-extrabold py-3.5 px-6 rounded-2xl shadow-lg shadow-indigo-500/30 transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+                    <span>⚔️ Start My Winter Arc</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         TRIAL: EXPIRED OVERLAY (Blocks access after expiry)
+         ============================================================ -->
+    <div id="trialExpiredOverlay" class="fixed inset-0 z-[100010] hidden bg-slate-950/97 backdrop-blur-md overflow-y-auto">
+        <div class="min-h-full flex items-center justify-center p-4">
+            <div class="glass max-w-lg w-full p-6 sm:p-8 rounded-[2.5rem] border-indigo-500/30 text-center space-y-5 shadow-2xl relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 trial-expired-overlay">
+                <div class="trial-snow-bg"></div>
+                <div class="absolute -top-16 -left-16 w-40 h-40 bg-indigo-500/15 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-16 -right-16 w-40 h-40 bg-rose-500/10 rounded-full blur-3xl"></div>
+
+                <div class="w-20 h-20 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-3xl flex items-center justify-center mx-auto text-slate-950 text-3xl shadow-lg shadow-indigo-500/40 relative z-10">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+
+                <div class="space-y-2 relative z-10">
+                    <h2 class="text-2xl font-extrabold text-slate-100">❄️ Your Winter Arc Has Paused</h2>
+                    <p class="text-sm text-slate-400">Your 7-day free trial has ended.</p>
+                </div>
+
+                <div class="bg-slate-950/70 rounded-2xl p-4 border border-indigo-500/20 text-left space-y-2 relative z-10">
+                    <h3 class="text-[10px] font-bold text-indigo-300 uppercase tracking-widest flex items-center gap-1.5">
+                        <i class="fa-solid fa-star text-[9px]"></i> What You Get
+                    </h3>
+                    <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-1.5 text-[11px] text-slate-300 font-medium">
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[9px]"></i> 90-Day Winter Arc System</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[9px]"></i> Habit & Progress Tracking</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[9px]"></i> AI-Powered Insights</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[9px]"></i> Progress Analytics</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[9px]"></i> Streak & XP System</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[9px]"></i> Winter Arc Calendar</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[9px]"></i> Daily Accountability</li>
+                        <li class="flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-[9px]"></i> Structured 90-Day Journey</li>
+                    </ul>
+                </div>
+
+                <div class="flex items-baseline justify-center gap-3 relative z-10">
+                    <span class="text-4xl font-black bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">₹49</span>
+                    <span class="text-xs text-slate-500 line-through">₹499</span>
+                    <span class="text-[9px] bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Save 90%</span>
+                </div>
+
+                <div class="space-y-3 relative z-10">
+                    <a href="https://t.me/Habitfeedback" target="_blank" rel="noopener" class="trial-cta-pulse w-full bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-extrabold py-4 px-6 rounded-2xl shadow-lg transition transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 no-underline">
+                        🔥 CONTINUE WINTER ARC — ₹49
+                    </a>
+                    <a href="https://t.me/Habitfeedback" target="_blank" rel="noopener" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold py-3 px-6 rounded-2xl transition flex items-center justify-center gap-2 no-underline text-sm active:scale-[0.98]">
+                        <i class="fa-brands fa-telegram text-lg text-blue-400"></i>
+                        💬 Contact Me on Telegram
+                    </a>
+                </div>
+
+                <p class="text-[10px] text-slate-500 relative z-10 leading-relaxed">
+                    Contact me on Telegram to unlock your full Winter Arc access.<br>
+                    <span class="text-slate-600">Your progress, habits and history are safe and untouched.</span>
+                </p>
+
+                <button type="button" onclick="window.dismissExpiredOverlay()" class="text-[10px] text-slate-500 hover:text-slate-300 underline transition relative z-10">
+                    🔄 Back to App (view only)
+                </button>
             </div>
         </div>
     </div>
@@ -217,6 +337,7 @@
             </div>
             
             <div id="leaderboardList" class="space-y-2 max-h-72 overflow-y-auto pr-2">
+                <!-- Leaderboard dynamically rendered here -->
             </div>
             
             <div class="pt-2 border-t border-slate-800/80 text-center">
@@ -238,6 +359,30 @@
                 <button type="button" onclick="window.closeSettingsModal()" class="text-slate-400 hover:text-slate-200 p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
+            </div>
+
+            <!-- ============ TRIAL STATUS SECTION ============ -->
+            <div class="bg-slate-950/70 border border-indigo-500/25 rounded-2xl p-3.5 space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-[11px] font-bold text-indigo-300 flex items-center gap-1.5 uppercase tracking-widest">
+                        <i class="fa-solid fa-gift"></i> Trial Status
+                    </h4>
+                    <span id="settingsTrialStatus" class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold uppercase tracking-wider">ACTIVE</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-[10px]">
+                    <div>
+                        <div class="text-slate-500 text-[8px] uppercase font-bold tracking-wider">Started</div>
+                        <div id="settingsTrialStarted" class="text-slate-300 font-semibold mt-0.5">--</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-500 text-[8px] uppercase font-bold tracking-wider">Expires</div>
+                        <div id="settingsTrialExpires" class="text-slate-300 font-semibold mt-0.5">--</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-500 text-[8px] uppercase font-bold tracking-wider">Remaining</div>
+                        <div id="settingsTrialRemaining" class="text-indigo-300 font-semibold mt-0.5">--</div>
+                    </div>
+                </div>
             </div>
 
             <form id="settingsForm" class="space-y-4 text-xs">
@@ -349,6 +494,7 @@
                     <i class="fa-solid fa-list text-emerald-400 text-[10px]"></i> Logged Tasks on this day:
                 </h4>
                 <div id="inspectorTasksList" class="space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
+                    <!-- Tasks injected here -->
                 </div>
             </div>
 
@@ -386,6 +532,11 @@
                     </div>
                 </div>
 
+                <!-- ============ TRIAL BADGE ============ -->
+                <div id="trialBadge" class="hidden bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-1.5 rounded-2xl items-center gap-1.5 transition-all">
+                    <span id="trialBadgeText" class="text-[9px] font-bold text-indigo-300 whitespace-nowrap tracking-wide">❄️ FREE TRIAL · 7D</span>
+                </div>
+
                 <div class="bg-slate-950/90 border border-slate-800 px-2.5 py-1.5 rounded-2xl hidden sm:flex items-center gap-1.5">
                     <div class="w-6 h-6 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-[9px]">
                         <i class="fa-solid fa-trophy"></i>
@@ -406,6 +557,7 @@
                     </div>
                 </div>
                 
+                <!-- Action Buttons -->
                 <button type="button" onclick="window.openLeaderboard()" class="w-8 h-8 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-amber-400 hover:text-amber-300 transition flex items-center justify-center shadow-md active:scale-95" title="Global Leaderboard">
                     <i class="fa-solid fa-ranking-star text-xs"></i>
                 </button>
@@ -430,6 +582,7 @@
 
     <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
 
+        <!-- Motivation Quote Banner -->
         <div class="glass-card p-4 sm:p-5 rounded-[2.5rem] relative overflow-hidden border-emerald-500/25 animate-float shadow-xl">
             <div class="flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
                 <div class="space-y-1 text-center sm:text-left">
@@ -444,6 +597,7 @@
             </div>
         </div>
 
+        <!-- VIP Focus Timer -->
         <section id="timerPanel" class="glass-card timer-panel p-5 rounded-[2.5rem] border-emerald-500/20 shadow-xl animate-float">
             <div class="flex flex-col lg:flex-row items-center justify-between gap-5">
                 <div class="flex items-center gap-3 min-w-0">
@@ -498,7 +652,9 @@
             </div>
         </section>
 
+        <!-- VIP Add-ons: Today at a Glance + Daily Mission -->
         <section id="vipAddons" class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-3 animate-fadeIn">
+            <!-- Productivity Snapshot -->
             <div class="glass-card p-3 sm:p-4 rounded-[1.25rem] border-emerald-500/20 shadow-xl flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-2.5">
                     <div class="flex items-center gap-2">
@@ -537,6 +693,7 @@
                 </div>
             </div>
 
+            <!-- Customized Mission Section -->
             <div class="glass-card p-3 sm:p-4 rounded-[1.25rem] border-amber-500/20 shadow-xl flex flex-col">
                 <div class="flex items-center justify-between mb-2.5">
                     <div class="flex items-center gap-1.5">
@@ -551,8 +708,10 @@
             </div>
         </section>
 
+        <!-- Top Overview Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
+            <!-- Target Countdown Card -->
             <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-amber-500/20 relative overflow-hidden glass-hover animate-float shadow-xl" style="animation-delay: 0.5s;">
                 <div class="absolute -right-3 -bottom-3 text-amber-500/5 text-8xl font-black pointer-events-none uppercase" id="goalWatermark">NEET</div>
                 <div>
@@ -579,6 +738,7 @@
                 </div>
             </div>
 
+            <!-- Interactive Glass Hydration Tracker Card -->
             <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-cyan-500/25 relative overflow-hidden glass-hover animate-float shadow-xl" style="animation-delay: 1s;">
                 <div class="absolute top-2 right-3 text-cyan-500/10 text-7xl font-black pointer-events-none">
                     <i class="fa-solid fa-droplet"></i>
@@ -593,6 +753,7 @@
                     <p class="text-[11px] text-slate-400 mb-3">Tap individual glass icons below to fill them:</p>
                     
                     <div id="waterGlassesGrid" class="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-28 overflow-y-auto p-1 pr-2">
+                        <!-- Rendered via JS -->
                     </div>
                 </div>
 
@@ -607,6 +768,7 @@
                 </div>
             </div>
 
+            <!-- Overall Performance Card with 360-Degree Rotating Multi-Color Rings -->
             <div class="glass-card p-6 rounded-[2.5rem] flex flex-col justify-between border-teal-500/20 bg-gradient-to-br from-slate-900/90 via-slate-900/60 to-teal-950/30 glass-hover animate-float shadow-xl" style="animation-delay: 1.5s;">
                 <div class="flex items-center justify-between mb-1">
                     <span class="text-xs font-extrabold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
@@ -616,6 +778,7 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 py-3 my-auto">
+                    <!-- Daily Ring -->
                     <div class="flex flex-col items-center">
                         <div class="relative w-14 h-14 flex items-center justify-center rotate-360">
                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -627,6 +790,7 @@
                         <span class="text-[11px] font-bold text-slate-300 mt-2">Daily</span>
                     </div>
 
+                    <!-- Weekly Ring -->
                     <div class="flex flex-col items-center">
                         <div class="relative w-14 h-14 flex items-center justify-center rotate-360" style="animation-direction: reverse; animation-duration: 22s;">
                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -638,6 +802,7 @@
                         <span class="text-[11px] font-bold text-slate-300 mt-2">Weekly</span>
                     </div>
 
+                    <!-- Monthly Ring -->
                     <div class="flex flex-col items-center">
                         <div class="relative w-14 h-14 flex items-center justify-center rotate-360" style="animation-duration: 25s;">
                             <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -653,6 +818,7 @@
 
         </div>
 
+        <!-- GRAPH & ANALYTICS SECTION (WITH CLICK-TO-INSPECT) -->
         <div class="glass-card p-6 rounded-[2.5rem] space-y-6 border-slate-800 shadow-xl">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
                 <div>
@@ -671,19 +837,25 @@
                 </div>
             </div>
 
+            <!-- View 1: 7-Day Visual Bar Graph with Colors -->
             <div id="weeklyGraphView" class="space-y-4">
                 <div class="flex items-end justify-between gap-2 sm:gap-4 h-48 pt-6 px-2 sm:px-6 bg-slate-950/60 rounded-3xl border border-slate-800/80" id="weeklyBarsContainer">
+                    <!-- Dynamic Bars rendered here -->
                 </div>
             </div>
 
+            <!-- View 2: Monthly Consistency Heatmap (Clickable with dates) -->
             <div id="heatmapGraphView" class="hidden space-y-4">
                 <div class="grid grid-cols-7 sm:grid-cols-10 gap-2 p-4 bg-slate-950/60 rounded-3xl border border-slate-800/80" id="monthlyHeatmapContainer">
+                    <!-- Dynamic Grid Blocks rendered here with real dates and click events -->
                 </div>
             </div>
         </div>
 
+        <!-- MAIN DYNAMIC SCHEDULE & ACHIEVEMENTS SECTION -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
+            <!-- Left 7 Cols: Dynamic Tasks -->
             <div class="lg:col-span-7 space-y-4">
                 
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/80 p-5 rounded-[2.5rem] border border-slate-800 shadow-xl">
@@ -696,6 +868,7 @@
                     <span class="text-xs font-bold text-slate-300 bg-slate-950 px-4 py-1.5 rounded-full border border-slate-800" id="taskCountText">0/0 Completed</span>
                 </div>
 
+                <!-- ADD TASK FORM WITH RECURRING / TODAY TOGGLE -->
                 <form id="addHabitForm" class="glass-card p-3 rounded-[2rem] flex flex-col gap-2.5 border border-emerald-500/30 shadow-lg relative overflow-hidden group">
                     <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity"></div>
                     
@@ -722,10 +895,13 @@
                     </div>
                 </form>
 
+                <!-- Habit List Container -->
                 <div id="habitList" class="space-y-3 mt-2">
+                    <!-- Rendered dynamically -->
                 </div>
             </div>
 
+            <!-- Right 5 Cols: ACHIEVEMENTS, BADGES, AND JOURNAL -->
             <div class="lg:col-span-5 space-y-4">
                 <div class="glass-card p-6 rounded-[2.5rem] space-y-4 border-amber-500/20 shadow-xl">
                     <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
@@ -735,6 +911,7 @@
                         <span class="text-xs bg-amber-500/10 text-amber-400 px-3 py-0.5 rounded-full border border-amber-500/20 font-mono font-bold" id="badgeCountText">0/8</span>
                     </div>
 
+                    <!-- Badge Category Filters -->
                     <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-[11px] font-bold text-slate-400">
                         <button type="button" onclick="window.filterBadges('all')" id="filterAll" class="px-3.5 py-1.5 rounded-2xl bg-emerald-500 text-slate-950 whitespace-nowrap shadow active:scale-95 transition">All</button>
                         <button type="button" onclick="window.filterBadges('streak')" id="filterStreak" class="px-3.5 py-1.5 rounded-2xl bg-slate-950 hover:text-slate-200 border border-slate-800 whitespace-nowrap active:scale-95 transition">Streaks 🔥</button>
@@ -742,10 +919,13 @@
                         <button type="button" onclick="window.filterBadges('special')" id="filterSpecial" class="px-3.5 py-1.5 rounded-2xl bg-slate-950 hover:text-slate-200 border border-slate-800 whitespace-nowrap active:scale-95 transition">Special 💎</button>
                     </div>
 
+                    <!-- Badges Grid -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="badgesContainer">
+                        <!-- Badges rendered via JS -->
                     </div>
                 </div>
                 
+                <!-- Daily Reflection Journal -->
                 <div class="glass-card p-6 rounded-[2.5rem] space-y-3 border-indigo-500/20 shadow-xl mt-4">
                     <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
                         <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-100 flex items-center gap-2">
@@ -764,6 +944,7 @@
 
     </main>
 
+    <!-- VIP Reward Toast -->
     <div id="vipRewardToast" class="fixed left-1/2 -translate-x-1/2 bottom-5 z-[100000] hidden">
         <div class="glass-card px-5 py-3 rounded-2xl border-emerald-400/40 shadow-2xl flex items-center gap-3 animate-modalPop">
             <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center text-emerald-400">
@@ -781,6 +962,246 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        /* ============================================================
+           WINTER ARC TRIAL SYSTEM — CONFIG
+           ============================================================ */
+        const TRIAL_KEY = 'winterArcTrial';               // isolated namespace
+        const TRIAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+        const TELEGRAM_LINK = 'https://t.me/Habitfeedback';
+        const TELEGRAM_USERNAME = '@Habitfeedback';
+
+        let trialState = null;
+        let trialInterval = null;
+
+        // Safe storage helpers (survive private mode / disabled storage)
+        function safeGetItem(key) {
+            try { return localStorage.getItem(key); } catch(e) { return null; }
+        }
+        function safeSetItem(key, val) {
+            try { localStorage.setItem(key, val); return true; } catch(e) { return false; }
+        }
+        function safeSessionGet(key) {
+            try { return sessionStorage.getItem(key); } catch(e) { return null; }
+        }
+        function safeSessionSet(key, val) {
+            try { sessionStorage.setItem(key, val); return true; } catch(e) { return false; }
+        }
+
+        /* Load trial state from localStorage with defensive parsing. */
+        function loadTrialState() {
+            const raw = safeGetItem(TRIAL_KEY);
+            if (!raw) return null;
+            try {
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') return null;
+                if (typeof parsed.trialStartedAt !== 'number' || typeof parsed.trialExpiresAt !== 'number') return null;
+                return parsed;
+            } catch (e) {
+                console.warn('[Trial] Corrupted trial data ignored.');
+                return null;
+            }
+        }
+
+        function saveTrialState(t) {
+            safeSetItem(TRIAL_KEY, JSON.stringify(t));
+        }
+
+        /* Derive current status from real timestamps — never from a counter variable. */
+        function computeTrialStatus(t, now) {
+            const ms = t.trialExpiresAt - now;
+            if (ms <= 0) return 'expired';
+            if (ms <= 24 * 60 * 60 * 1000) return 'expiring_soon';
+            return 'active';
+        }
+
+        /* Initialize or restore the trial. Never resets existing trial data. */
+        function initTrial() {
+            let t = loadTrialState();
+            const now = Date.now();
+
+            if (!t) {
+                // Brand-new visitor → start a fresh 7-day trial.
+                t = {
+                    trialStartedAt: now,
+                    trialExpiresAt: now + TRIAL_DURATION_MS,
+                    trialStatus: 'active',
+                    welcomeShown: false,
+                    version: 1
+                };
+                saveTrialState(t);
+            } else {
+                // Existing trial → preserve it (protects against reload / restart).
+                t.trialStatus = computeTrialStatus(t, now);
+                if (!t.welcomeShown) t.welcomeShown = false;
+                saveTrialState(t);
+            }
+            return t;
+        }
+
+        function refreshTrialStatus() {
+            if (!trialState) return;
+            trialState.trialStatus = computeTrialStatus(trialState, Date.now());
+            saveTrialState(trialState);
+        }
+
+        /* Format ms into "Xd Xh Xm" style string. */
+        function formatRemaining(ms) {
+            if (ms <= 0) return '0m';
+            const totalSec = Math.floor(ms / 1000);
+            const d = Math.floor(totalSec / 86400);
+            const h = Math.floor((totalSec % 86400) / 3600);
+            const m = Math.floor((totalSec % 3600) / 60);
+            if (d > 0) return `${d}d ${h}h ${m}m`;
+            if (h > 0) return `${h}h ${m}m`;
+            return `${m}m`;
+        }
+
+        /* Render the small header badge based on the current trial status. */
+        function renderTrialBadge() {
+            const badge = document.getElementById('trialBadge');
+            const text  = document.getElementById('trialBadgeText');
+            if (!badge || !text || !trialState) return;
+
+            const remaining = trialState.trialExpiresAt - Date.now();
+
+            if (trialState.trialStatus === 'expired' || remaining <= 0) {
+                badge.className = 'bg-rose-500/10 border border-rose-500/30 px-2.5 py-1.5 rounded-2xl flex items-center gap-1.5 transition-all';
+                text.className = 'text-[9px] font-bold text-rose-300 whitespace-nowrap tracking-wide';
+                text.innerText = '🔒 TRIAL ENDED';
+            } else if (trialState.trialStatus === 'expiring_soon') {
+                badge.className = 'bg-amber-500/10 border border-amber-500/30 px-2.5 py-1.5 rounded-2xl flex items-center gap-1.5 transition-all';
+                text.className = 'text-[9px] font-bold text-amber-300 whitespace-nowrap tracking-wide';
+                const hrs = Math.max(1, Math.floor(remaining / 3600000));
+                text.innerText = `⚠️ ${hrs}H LEFT`;
+            } else {
+                badge.className = 'bg-indigo-500/10 border border-indigo-500/30 px-2.5 py-1.5 rounded-2xl flex items-center gap-1.5 transition-all';
+                text.className = 'text-[9px] font-bold text-indigo-300 whitespace-nowrap tracking-wide';
+                const d = Math.floor(remaining / 86400000);
+                const h = Math.floor((remaining % 86400000) / 3600000);
+                text.innerText = `❄️ FREE · ${d}D ${h}H`;
+            }
+        }
+
+        /* Render trial info inside the Settings modal. */
+        function renderTrialSettings() {
+            if (!trialState) return;
+            const statusEl = document.getElementById('settingsTrialStatus');
+            const startedEl = document.getElementById('settingsTrialStarted');
+            const expiresEl = document.getElementById('settingsTrialExpires');
+            const remainingEl = document.getElementById('settingsTrialRemaining');
+            if (!statusEl || !startedEl || !expiresEl || !remainingEl) return;
+
+            const now = Date.now();
+            const remaining = trialState.trialExpiresAt - now;
+            const status = computeTrialStatus(trialState, now);
+
+            if (status === 'expired') {
+                statusEl.className = 'text-[9px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold uppercase tracking-wider';
+                statusEl.innerText = 'EXPIRED';
+            } else if (status === 'expiring_soon') {
+                statusEl.className = 'text-[9px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 font-bold uppercase tracking-wider';
+                statusEl.innerText = 'EXPIRING SOON';
+            } else {
+                statusEl.className = 'text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold uppercase tracking-wider';
+                statusEl.innerText = 'ACTIVE';
+            }
+
+            const fmt = (ts) => new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            startedEl.innerText = fmt(trialState.trialStartedAt);
+            expiresEl.innerText = fmt(trialState.trialExpiresAt);
+            remainingEl.innerText = formatRemaining(remaining);
+        }
+
+        /* Show the blocking expired overlay (only when appropriate). */
+        function showExpiredOverlay() {
+            const overlay = document.getElementById('trialExpiredOverlay');
+            if (!overlay) return;
+            overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideExpiredOverlay() {
+            const overlay = document.getElementById('trialExpiredOverlay');
+            if (!overlay) return;
+            overlay.classList.add('hidden');
+        }
+
+        /* Called once at boot. */
+        function initTrialSystem() {
+            trialState = initTrial();
+
+            // Already-expired trial → gate the app immediately (unless the user
+            // dismissed the overlay in this same session).
+            const dismissed = safeSessionGet('winterArcTrialDismissed') === '1';
+            if (trialState.trialStatus === 'expired' && !dismissed) {
+                showExpiredOverlay();
+            } else if (trialState.trialStatus !== 'expired' && !trialState.welcomeShown) {
+                // First-entry experience: show the trial welcome modal once.
+                const modal = document.getElementById('trialWelcomeModal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+
+            renderTrialBadge();
+
+            // Single controlled interval — updates badge & gates expiry.
+            if (trialInterval) clearInterval(trialInterval);
+            trialInterval = setInterval(() => {
+                refreshTrialStatus();
+                renderTrialBadge();
+                if (trialState.trialStatus === 'expired') {
+                    const overlay = document.getElementById('trialExpiredOverlay');
+                    const isHidden = !overlay || overlay.classList.contains('hidden');
+                    const isDismissed = safeSessionGet('winterArcTrialDismissed') === '1';
+                    if (isHidden && !isDismissed) {
+                        showExpiredOverlay();
+                    }
+                }
+            }, 30000); // every 30 seconds is plenty
+        }
+
+        /* ------- Public trial UI handlers ------- */
+        window.closeTrialWelcome = function() {
+            if (trialState) {
+                trialState.welcomeShown = true;
+                saveTrialState(trialState);
+            }
+            const modal = document.getElementById('trialWelcomeModal');
+            if (modal) modal.classList.add('hidden');
+
+            triggerConfetti();
+
+            // Chain into the original app welcome modal (once).
+            if (typeof state !== 'undefined' && state && !state.welcomeShown) {
+                if (typeof checkWelcomeModal === 'function') {
+                    checkWelcomeModal();
+                }
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+        };
+
+        window.dismissExpiredOverlay = function() {
+            safeSessionSet('winterArcTrialDismissed', '1');
+            hideExpiredOverlay();
+            document.body.style.overflow = 'auto';
+        };
+
+        // Expose for debugging / future server-side migration
+        window.__winterArcTrial = {
+            getState: () => trialState,
+            key: TRIAL_KEY,
+            telegram: TELEGRAM_LINK
+        };
+
+        /* ============================================================
+           END WINTER ARC TRIAL SYSTEM
+           ============================================================ */
+
+
+        // Adjusted Date Calculation helper
         window.getAdjustedDate = function(offsetDays = 0) {
             const now = new Date();
             const resetHour = window._appState?.settings?.resetHour ?? 4; 
@@ -876,6 +1297,7 @@
             merged.settings = { ...defaultObj.settings, ...(savedObj.settings || {}) };
             merged.settings.timer = { ...defaultObj.settings.timer, ...(savedObj.settings?.timer || {}) };
             
+            // Hardened checks against null array issues
             if (!merged.habits || !Array.isArray(merged.habits)) merged.habits = [];
             if (!merged.history) merged.history = {};
             if (!merged.journal) merged.journal = {};
@@ -1116,6 +1538,7 @@
             if(modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
         };
 
+        // THEME TOGGLE UPDATED TO ALWAYS KEEP ICONS SYNCED
         window.toggleTheme = function() {
             const htmlEl = document.documentElement;
             const icons = [document.getElementById('themeIcon'), document.getElementById('themeIconMobile')];
@@ -1451,6 +1874,10 @@
             if (missionTaskEl) missionTaskEl.value = state.settings.missionTaskCount || 3;
             if (missionFocusEl) missionFocusEl.value = state.settings.missionFocusMinutes || 60;
 
+            // Refresh trial status block inside settings
+            refreshTrialStatus();
+            renderTrialSettings();
+
             const modal = document.getElementById('settingsModal');
             if (modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
         };
@@ -1520,6 +1947,12 @@
 
         function checkWelcomeModal() {
             if (!state.welcomeShown) {
+                // Do NOT stack on top of the trial welcome modal.
+                const trialModal = document.getElementById('trialWelcomeModal');
+                if (trialModal && !trialModal.classList.contains('hidden')) return;
+                // Do NOT show app welcome when the trial is expired.
+                if (trialState && trialState.trialStatus === 'expired') return;
+
                 const modal = document.getElementById('welcomeModal');
                 if (modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
             }
@@ -2122,6 +2555,7 @@
                 if(icon) { icon.classList.remove('fa-sun'); icon.classList.add('fa-moon'); }
             }
             
+            // PWA Manifest setup
             const manifest = {
                 name: "HabitTracker Pro", short_name: "HabitPro", start_url: window.location.href, display: "standalone",
                 background_color: "#030712", theme_color: "#10b981",
@@ -2133,9 +2567,13 @@
             document.head.insertAdjacentHTML('beforeend', `<meta name="theme-color" content="#10b981">`);
             document.head.insertAdjacentHTML('beforeend', `<meta name="apple-mobile-web-app-capable" content="yes">`);
 
+            // === TRIAL SYSTEM BOOT (before Firebase so it can gate properly) ===
+            initTrialSystem();
+
             initFirebase();
             updateLiveClock();
 
+            // Attaching Event listeners safely!
             const form = document.getElementById('addHabitForm');
             if (form) {
                 form.addEventListener('submit', function(e) {
@@ -2170,15 +2608,11 @@
             setInterval(updateLiveClock, 1000);
             setInterval(updateDeadlineTracker, 60000);
 
-            setTimeout(() => {
-                const testModal = document.getElementById('testingModeModal');
-                if (testModal) {
-                    testModal.classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
-                }
-            }, 500);
+            // NOTE: The legacy "testing mode" modal has been intentionally removed
+            // because the new Winter Arc trial system now gates access properly.
         }
 
+        // Execute immediately when DOM is completely built
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initializeAppUI);
         } else {
